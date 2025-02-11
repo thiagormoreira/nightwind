@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jjranalli/nightwind.git"
+    "url": "git+https://github.com/thiagormoreira/nightwind.git"
   },
   "keywords": [
     "tailwind",
@@ -20,10 +20,9 @@
   "peerDependencies": {
     "tailwindcss": "^2.0.0 || ^3.0.0 || ^4.0.0"
   },
-  "author": "Jacopo Ranalli",
+  "author": "Thiago Moreira",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jjranalli/nightwind/issues"
-  },
-  "homepage": "https://nightwindcss.com"
+    "url": "https://github.com/thiagormoreira/nightwind/issues"
+  }
 }
