@@ -1,5 +1,9 @@
 ![Nightwind cover image](https://github.com/jjranalli/nightwind-demo/raw/master/nightwindcss.com/public/nightwind-logotext.png)
 
+IMPORTANT: This repository is a maintained fork of the original "nightwind" project (https://github.com/jjranalli/nightwind). The original package was abandoned by its author. I (thiagormoreira) forked the project and will continue maintaining and publishing updates, fixes and compatibility improvements here.
+
+---
+
 A Tailwind CSS plugin that gives you an **out-of-the-box, customisable, overridable dark mode.**
 
 ---
@@ -123,7 +127,7 @@ export default function Navbar() {
 
 ### BeforeTransition
 
-Nightwind also exports a `beforeTransition` function that you can leverage in case you prefer to build your own toggle functions. It prevents unwanted transitions as a side-effect of having nightwind class in the html tag.
+Nightwind also exports a `beforeTransition` function that you can leverage in case you prefer to build your own toggle functions. It prevents unwanted transitions as a side-effect of having nightwind [...]
 
 Check out the `toggle` function in the [Nextjs example below](#examples) for an example of how this could be implemented.
 
@@ -231,7 +235,7 @@ export default function Navbar() {
 <details>
   <summary>Pure JavaScript or Alpine.js</summary>
   
-The whole idea is to deconstruct helper.js, converting it from a module to a var. And unpacking the 'init' function from within helper to be its own script body to execut at DOM render. Here is the code for that at the time of writing (Oct 14th 2021). As long as the classes made it to tailwind.css (did you configure the plugins right?) then this will enable `nightwind.toggle()` and `nightwind.enable()`
+  The whole idea is to deconstruct helper.js, converting it from a module to a var. And unpacking the 'init' function from within helper to be its own script body to execut at DOM render. Here is the co[...] 
    
 ```js
 <script>
@@ -323,7 +327,7 @@ You can also extend Nightwind to other classes and variants:
 
 Nightwind switches between opposite color weights when switching to dark mode. So a -50 color gets switched with a -900 color, -100 with -800 and so forth.
 
-> Note: Except for the -50 and -900 weights, the sum of opposite weights is always 900. To customise how Nightwind inverts colors by default, see [how to set up a custom color scale](#custom-color-scale)
+> Note: Except for the -50 and -900 weights, the sum of opposite weights is always 900. To customise how Nightwind inverts colors by default, see [how to set up a custom color scale](#custom-color-sca[...])
 
 If you add your custom colors in tailwind.config.js using number notation, Nightwind will treat them the same way as Tailwind's colors when switching into dark mode.
 
@@ -381,7 +385,7 @@ If you want an element to remain exactly the same in both light and dark modes, 
 
 > Note: if you only want some of the colors to remain unchanged, consider using [overrides](#overrides).
 
-To prevent all children of an element to remain unchanged in dark mode, you can add the **'nightwind-prevent-block'** class to the element. All descandant nodes of the element will be prevented from switching.
+To prevent all children of an element to remain unchanged in dark mode, you can add the **'nightwind-prevent-block'** class to the element. All descandant nodes of the element will be prevented from s[...]  
 
 You can customize the name of both classes in your tailwind.config.js file
 
@@ -433,7 +437,7 @@ module.exports = {
 
 Nightwind by default generates transition classes for 'text', 'bg' and 'border' color classes. This should make most elements transition smoothly without affecting performances.
 
-In your configuration file you can also set the **transitionClasses** property to 'full' to enable generation of transition classes for all color classes used throughout your website (i.e. rings, divide and placeholder).
+In your configuration file you can also set the **transitionClasses** property to 'full' to enable generation of transition classes for all color classes used throughout your website (i.e. rings, divi[...] 
 
 ```js
 // tailwind.config.js
@@ -651,62 +655,6 @@ module.exports = {
         rose: {
           default: "blue",
           200: "yellow.300",
-        },
-      },
-    },
-  },
-}
-```
-
-## Overrides
-
-The default dark variant allows you to write classes like 'dark:bg-gray-200' (not necessarily related to color classes) that only gets applied when you switch into dark mode.
-
-The 'dark' variant can be used to override the automatic Nightwind classes.
-
-```html
-<h2 class="text-gray-900 dark:text-yellow-200">I'm yellow in dark mode</h2>
-```
-
-> Note: The 'dark' variant can also be concatenated with both screens and other variants, so you can write classes like 'sm:dark:hover:text-yellow-200'.
-
-Please refer to the [Tailwind official documentation](https://tailwindcss.com/docs/dark-mode) to learn more about the 'dark' variant.
-
-## Typography
-
-If you're using the [Typography plugin](https://github.com/tailwindlabs/tailwindcss-typography), you can let Nightwind build an automatic dark mode of all typography color styles.
-
-> Note: It will respect all customizations and [color mappings](#color-mappings) specified in your nightwind configuration.
-
-Simply add the following line in your Nightwind theme configuration:
-
-```js
-// tailwind.config.js
-module.exports = {
-  theme: {
-    nightwind: {
-      typography: true,
-    },
-  },
-}
-```
-
-To fine-tune your typography dark mode, you can define the single classes by using the [individual color syntax](#individual-colors) (either hex or tailwind-based color codes).
-
-```js
-// tailwind.config.js
-module.exports = {
-  theme: {
-    nightwind: {
-      typography: {
-        color: "blue.400",
-        h1: {
-          color: "#90e0ef",
-        },
-        indigo: {
-          a: {
-            color: "purple.300",
-          },
         },
       },
     },
