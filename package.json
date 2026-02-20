@@ -31,6 +31,9 @@
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{js,jsx,json,md}\""
   },
+  "engines": {
+    "node": ">=20.12.0"
+  },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.0",
     "autoprefixer": "^10.4.24",
