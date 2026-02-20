@@ -20,7 +20,16 @@ const nightwind = plugin(
     const colorVariants = ["hover"]
     const prefixes = ["text", "bg", "border"]
     const weights = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900]
-    const opacities = theme("opacity") || {}
+    const rawOpacities = theme("opacity") || {}
+    const opacitiesConfig = theme("nightwind.opacityClasses", ["50"])
+    const opacities = {}
+    if (opacitiesConfig === true) {
+      Object.assign(opacities, rawOpacities)
+    } else if (Array.isArray(opacitiesConfig)) {
+      opacitiesConfig.forEach(opt => {
+        if (rawOpacities[opt]) opacities[opt] = rawOpacities[opt]
+      })
+    }
     let importantSelector = ""
     let importantProperty = ""
 

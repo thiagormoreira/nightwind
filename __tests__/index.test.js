@@ -22,6 +22,9 @@ async function generateCss(html, config = {}) {
               600: "#2563eb",
             },
           },
+          nightwind: {
+            opacityClasses: ["10", "40", "50", "60", "80"],
+          },
         },
       },
       plugins: [nightwind],
@@ -77,6 +80,9 @@ describe("nightwind plugin", () => {
             "custom-var": "var(--my-color)",
             "custom-rgb": "rgb(10 20 30)",
           },
+        },
+        nightwind: {
+          opacityClasses: ["40", "60", "80"],
         }
       }
     })
