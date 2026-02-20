@@ -5,7 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.0] - 2026-02-20
+
+### Added
+- **Universal Opacity Support**: Dynamic CSS attribute selectors ([class*=".../"]) now support ANY opacity modifier (including arbitrary values like `bg-red-500/[0.3]`) with zero performance overhead.
+- **100% Color Utility Coverage**: Added support for `outline-`, `decoration-`, `accent-`, `caret-`, `fill-`, `stroke-`, and `shadow-color` (via `--tw-shadow-color`).
+- **Enhanced Transitions**: Default transition duration increased to `400ms` with `ease-in-out` for a smoother theme-switching experience.
+- **Compatibility**: Verified support for Tailwind CSS v3 and prepared for v4 "CSS-first" configuration.
+
+### Fixed
+- **PostCSS Performance**: Resolved Out-Of-Memory (OOM) errors and hangs caused by static opacity combinatorial explosion.
+- **Color Inversion Precision**: Improved `white`/`black` inversion when modifiers are present.
+- **Utility Conflicts**: Fixed detection logic for overlapping utilities like `ring-` and `ring-offset-`.
+- **Selector Robustness**: Improved handling of `::placeholder`, `divide`, and complex pseudo-variants.
 
 ## [1.1.13] - 2023-02-21
 
