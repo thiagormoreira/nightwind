@@ -57,4 +57,31 @@ describe("nightwind plugin", () => {
     )
     expect(css).toContain(".nightwind-prevent")
   })
+
+  it("should handle opacity modifiers appropriately", async () => {
+    const css = await generateCss('<div class="bg-red-600/50 border-blue-500/10"></div>')
+    expect(css).toContain(".dark .bg-red-600\\/50")
+    expect(css).toContain("rgba(252, 165, 165, 0.5)")
+    expect(css).toContain(".dark .border-blue-500\\/10")
+    expect(css).toContain("rgba(96, 165, 250, 0.1)")
+  })
+
+  it("should handle custom flat colors", async () => {
+    const css = await generateCss(`
+      <div class="bg-custom-hex/40 text-custom-var/60 border-custom-rgb/80"></div>
+    `, {
+      theme: {
+        extend: {
+          colors: {
+            "custom-hex": "#1a2b3c",
+            "custom-var": "var(--my-color)",
+            "custom-rgb": "rgb(10 20 30)",
+          },
+        }
+      }
+    })
+    expect(css).toContain(".dark .bg-custom-hex\\/40")
+    expect(css).toContain(".dark .text-custom-var\\/60")
+    expect(css).toContain(".dark .border-custom-rgb\\/80")
+  })
 })
