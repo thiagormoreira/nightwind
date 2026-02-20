@@ -339,9 +339,8 @@ const nightwind = plugin(
                   if (!typographyValues[`${modifier}`][`${classname}`]) {
                     typographyValues[`${modifier}`][`${classname}`] = {}
                   }
-                  typographyValues[`${modifier}`][`${classname}`][
-                    property
-                  ] = colorValue
+                  typographyValues[`${modifier}`][`${classname}`][property] =
+                    colorValue
                 }
               })
             }
@@ -561,24 +560,27 @@ const nightwind = plugin(
 
       const generateClass = (prefix, property) => {
         return {
-          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}`]: {
-            [`${property}`]: colorValue + importantProperty,
-            [`${property}`]:
-              hexToRGB(`${colorValue}`, `var(--tw-${prefix})`) +
-              importantProperty,
-          },
-          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}${fixedElementClass}`]: {
-            [`${property}`]: defaultColorValue + importantProperty,
-            [`${property}`]:
-              hexToRGB(`${defaultColorValue}`, `var(--tw-${prefix})`) +
-              importantProperty,
-          },
-          [`${importantSelector}${darkSelector} ${fixedBlockClass} .${colorClass}${pseudoVariant}`]: {
-            [`${property}`]: defaultColorValue + importantProperty,
-            [`${property}`]:
-              hexToRGB(`${defaultColorValue}`, `var(--tw-${prefix})`) +
-              importantProperty,
-          },
+          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}`]:
+            {
+              [`${property}`]: colorValue + importantProperty,
+              [`${property}`]:
+                hexToRGB(`${colorValue}`, `var(--tw-${prefix})`) +
+                importantProperty,
+            },
+          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}${fixedElementClass}`]:
+            {
+              [`${property}`]: defaultColorValue + importantProperty,
+              [`${property}`]:
+                hexToRGB(`${defaultColorValue}`, `var(--tw-${prefix})`) +
+                importantProperty,
+            },
+          [`${importantSelector}${darkSelector} ${fixedBlockClass} .${colorClass}${pseudoVariant}`]:
+            {
+              [`${property}`]: defaultColorValue + importantProperty,
+              [`${property}`]:
+                hexToRGB(`${defaultColorValue}`, `var(--tw-${prefix})`) +
+                importantProperty,
+            },
         }
       }
 
@@ -608,24 +610,27 @@ const nightwind = plugin(
         return generateClass("ring-opacity", "--tw-ring-color")
       } else if (colorClass.includes("divide-")) {
         return {
-          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant} > :not([hidden]) ~ :not([hidden])`]: {
-            borderColor: colorValue + importantProperty,
-            borderColor:
-              hexToRGB(`${colorValue}`, `var(--tw-divide-opacity)`) +
-              importantProperty,
-          },
-          [`${importantSelector}${darkSelector} ${fixedElementClass}.${colorClass}${pseudoVariant} > :not([hidden]) ~ :not([hidden])`]: {
-            borderColor: defaultColorValue + importantProperty,
-            borderColor:
-              hexToRGB(`${defaultColorValue}`, `var(--tw-divide-opacity)`) +
-              importantProperty,
-          },
-          [`${importantSelector}${darkSelector} ${fixedBlockClass} .${colorClass}${pseudoVariant} > :not([hidden]) ~ :not([hidden])`]: {
-            borderColor: defaultColorValue + importantProperty,
-            borderColor:
-              hexToRGB(`${defaultColorValue}`, `var(--tw-divide-opacity)`) +
-              importantProperty,
-          },
+          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant} > :not([hidden]) ~ :not([hidden])`]:
+            {
+              borderColor: colorValue + importantProperty,
+              borderColor:
+                hexToRGB(`${colorValue}`, `var(--tw-divide-opacity)`) +
+                importantProperty,
+            },
+          [`${importantSelector}${darkSelector} ${fixedElementClass}.${colorClass}${pseudoVariant} > :not([hidden]) ~ :not([hidden])`]:
+            {
+              borderColor: defaultColorValue + importantProperty,
+              borderColor:
+                hexToRGB(`${defaultColorValue}`, `var(--tw-divide-opacity)`) +
+                importantProperty,
+            },
+          [`${importantSelector}${darkSelector} ${fixedBlockClass} .${colorClass}${pseudoVariant} > :not([hidden]) ~ :not([hidden])`]:
+            {
+              borderColor: defaultColorValue + importantProperty,
+              borderColor:
+                hexToRGB(`${defaultColorValue}`, `var(--tw-divide-opacity)`) +
+                importantProperty,
+            },
         }
       } else if (colorClass.includes("placeholder-")) {
         return {
@@ -635,93 +640,107 @@ const nightwind = plugin(
               hexToRGB(`${colorValue}`, `var(--tw-text-opacity)`) +
               importantProperty,
           },
-          [`${importantSelector}${darkSelector} ${fixedElementClass}.${colorClass}::placeholder`]: {
-            color: defaultColorValue + importantProperty,
-            color:
-              hexToRGB(`${defaultColorValue}`, `var(--tw-text-opacity)`) +
-              importantProperty,
-          },
-          [`${importantSelector}${darkSelector} ${fixedBlockClass} .${colorClass}::placeholder`]: {
-            color: defaultColorValue + importantProperty,
-            color:
-              hexToRGB(`${defaultColorValue}`, `var(--tw-text-opacity)`) +
-              importantProperty,
-          },
+          [`${importantSelector}${darkSelector} ${fixedElementClass}.${colorClass}::placeholder`]:
+            {
+              color: defaultColorValue + importantProperty,
+              color:
+                hexToRGB(`${defaultColorValue}`, `var(--tw-text-opacity)`) +
+                importantProperty,
+            },
+          [`${importantSelector}${darkSelector} ${fixedBlockClass} .${colorClass}::placeholder`]:
+            {
+              color: defaultColorValue + importantProperty,
+              color:
+                hexToRGB(`${defaultColorValue}`, `var(--tw-text-opacity)`) +
+                importantProperty,
+            },
         }
       } else if (colorClass.includes("ring-offset-")) {
         return {
-          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}`]: {
-            "--tw-ring-offset-color": colorValue + importantProperty,
-          },
-          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}${fixedElementClass}`]: {
-            "--tw-ring-offset-color": defaultColorValue + importantProperty,
-          },
-          [`${importantSelector}${darkSelector} ${fixedBlockClass} .${colorClass}${pseudoVariant}`]: {
-            "--tw-ring-offset-color": defaultColorValue + importantProperty,
-          },
+          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}`]:
+            {
+              "--tw-ring-offset-color": colorValue + importantProperty,
+            },
+          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}${fixedElementClass}`]:
+            {
+              "--tw-ring-offset-color": defaultColorValue + importantProperty,
+            },
+          [`${importantSelector}${darkSelector} ${fixedBlockClass} .${colorClass}${pseudoVariant}`]:
+            {
+              "--tw-ring-offset-color": defaultColorValue + importantProperty,
+            },
         }
       } else if (colorClass.includes("from-")) {
         return {
-          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}`]: {
-            "--tw-gradient-from": colorValue + importantProperty,
-            "--tw-gradient-stops":
-              `var(--tw-gradient-from), var(--tw-gradient-to, ${hexToRGB(
-                `${colorValue}`,
-                "0"
-              )})` + importantProperty,
-          },
-          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}${fixedElementClass}`]: {
-            "--tw-gradient-from": defaultColorValue + importantProperty,
-            "--tw-gradient-stops":
-              `var(--tw-gradient-from), var(--tw-gradient-to, ${hexToRGB(
-                `${defaultColorValue}`,
-                "0"
-              )})` + importantProperty,
-          },
-          [`${importantSelector}${darkSelector} ${fixedBlockClass} .${colorClass}${pseudoVariant}`]: {
-            "--tw-gradient-from": defaultColorValue + importantProperty,
-            "--tw-gradient-stops":
-              `var(--tw-gradient-from), var(--tw-gradient-to, ${hexToRGB(
-                `${defaultColorValue}`,
-                "0"
-              )})` + importantProperty,
-          },
+          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}`]:
+            {
+              "--tw-gradient-from": colorValue + importantProperty,
+              "--tw-gradient-stops":
+                `var(--tw-gradient-from), var(--tw-gradient-to, ${hexToRGB(
+                  `${colorValue}`,
+                  "0"
+                )})` + importantProperty,
+            },
+          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}${fixedElementClass}`]:
+            {
+              "--tw-gradient-from": defaultColorValue + importantProperty,
+              "--tw-gradient-stops":
+                `var(--tw-gradient-from), var(--tw-gradient-to, ${hexToRGB(
+                  `${defaultColorValue}`,
+                  "0"
+                )})` + importantProperty,
+            },
+          [`${importantSelector}${darkSelector} ${fixedBlockClass} .${colorClass}${pseudoVariant}`]:
+            {
+              "--tw-gradient-from": defaultColorValue + importantProperty,
+              "--tw-gradient-stops":
+                `var(--tw-gradient-from), var(--tw-gradient-to, ${hexToRGB(
+                  `${defaultColorValue}`,
+                  "0"
+                )})` + importantProperty,
+            },
         }
       } else if (colorClass.includes("via-")) {
         return {
-          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}`]: {
-            "--tw-gradient-stops":
-              `var(--tw-gradient-from), ${colorValue}, var(--tw-gradient-to, ${hexToRGB(
-                `${colorValue}`,
-                "0"
-              )})` + importantProperty,
-          },
-          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}${fixedElementClass}`]: {
-            "--tw-gradient-stops":
-              `var(--tw-gradient-from), ${defaultColorValue}, var(--tw-gradient-to, ${hexToRGB(
-                `${defaultColorValue}`,
-                "0"
-              )})` + importantProperty,
-          },
-          [`${importantSelector}${darkSelector} ${fixedBlockClass} .${colorClass}${pseudoVariant}`]: {
-            "--tw-gradient-stops":
-              `var(--tw-gradient-from), ${defaultColorValue}, var(--tw-gradient-to, ${hexToRGB(
-                `${defaultColorValue}`,
-                "0"
-              )})` + importantProperty,
-          },
+          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}`]:
+            {
+              "--tw-gradient-stops":
+                `var(--tw-gradient-from), ${colorValue}, var(--tw-gradient-to, ${hexToRGB(
+                  `${colorValue}`,
+                  "0"
+                )})` + importantProperty,
+            },
+          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}${fixedElementClass}`]:
+            {
+              "--tw-gradient-stops":
+                `var(--tw-gradient-from), ${defaultColorValue}, var(--tw-gradient-to, ${hexToRGB(
+                  `${defaultColorValue}`,
+                  "0"
+                )})` + importantProperty,
+            },
+          [`${importantSelector}${darkSelector} ${fixedBlockClass} .${colorClass}${pseudoVariant}`]:
+            {
+              "--tw-gradient-stops":
+                `var(--tw-gradient-from), ${defaultColorValue}, var(--tw-gradient-to, ${hexToRGB(
+                  `${defaultColorValue}`,
+                  "0"
+                )})` + importantProperty,
+            },
         }
       } else if (colorClass.includes("to-")) {
         return {
-          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}`]: {
-            "--tw-gradient-to": colorValue + importantProperty,
-          },
-          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}${fixedElementClass}`]: {
-            "--tw-gradient-to": defaultColorValue + importantProperty,
-          },
-          [`${importantSelector}${darkSelector} ${fixedBlockClass} .${colorClass}${pseudoVariant}`]: {
-            "--tw-gradient-to": defaultColorValue + importantProperty,
-          },
+          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}`]:
+            {
+              "--tw-gradient-to": colorValue + importantProperty,
+            },
+          [`${importantSelector}${darkSelector} .${colorClass}${pseudoVariant}${fixedElementClass}`]:
+            {
+              "--tw-gradient-to": defaultColorValue + importantProperty,
+            },
+          [`${importantSelector}${darkSelector} ${fixedBlockClass} .${colorClass}${pseudoVariant}`]:
+            {
+              "--tw-gradient-to": defaultColorValue + importantProperty,
+            },
         }
       }
     })

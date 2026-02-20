@@ -1,5 +1,5 @@
 {
-  "name": "nightwind",
+  "name": "@thiagormoreira/nightwind",
   "version": "1.1.13",
   "description": "An automatic, overridable, customisable Tailwind dark mode plugin",
   "main": "src/index.js",
@@ -24,5 +24,21 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/thiagormoreira/nightwind/issues"
+  },
+  "homepage": "https://github.com/thiagormoreira/nightwind#readme",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint .",
+    "format": "prettier --write \"**/*.{js,jsx,json,md}\""
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.24",
+    "eslint": "^10.0.0",
+    "eslint-plugin-jest": "^29.15.0",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
+    "postcss": "^8.5.6",
+    "prettier": "^3.8.1",
+    "tailwindcss": "^3.4.19"
   }
 }

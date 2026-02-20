@@ -231,7 +231,6 @@ export default function Navbar() {
 
 </details>
 
-
 <details>
   <summary>Pure JavaScript or Alpine.js</summary>
   
@@ -252,20 +251,20 @@ var nightwind = {
     }
   },
 
-  toggle: () => {
-    nightwind.beforeTransition();
-    if (!document.documentElement.classList.contains('dark')) {
-      document.documentElement.classList.add('dark');
-      window.localStorage.setItem('nightwind-mode', 'dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-        window.localStorage.setItem('nightwind-mode', 'light');
-    }
-  },
+toggle: () => {
+nightwind.beforeTransition();
+if (!document.documentElement.classList.contains('dark')) {
+document.documentElement.classList.add('dark');
+window.localStorage.setItem('nightwind-mode', 'dark');
+} else {
+document.documentElement.classList.remove('dark');
+window.localStorage.setItem('nightwind-mode', 'light');
+}
+},
 
-  enable: (dark) => {
-    const mode = dark ? "dark" : "light";
-    const opposite = dark ? "light" : "dark";
+enable: (dark) => {
+const mode = dark ? "dark" : "light";
+const opposite = dark ? "light" : "dark";
 
     nightwind.beforeTransition();
 
@@ -274,9 +273,11 @@ var nightwind = {
     }
     document.documentElement.classList.add(mode);
     window.localStorage.setItem('nightwind-mode', mode);
-  },
- }
+
+},
+}
 </script>
+
 <script>
 (function() {
   function getInitialColorMode() {
@@ -295,7 +296,8 @@ var nightwind = {
   getInitialColorMode() == 'light' ? document.documentElement.classList.remove('dark') : document.documentElement.classList.add('dark');
 })()
 </script>
-```
+
+````
 
 </details>
 
@@ -347,7 +349,7 @@ module.exports = {
     },
   },
 }
-```
+````
 
 Check out [**color mappings**](#color-mappings) to see how to further customize your dark theme.
 
