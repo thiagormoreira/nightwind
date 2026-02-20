@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2026-02-20
+
+### Changed
+- **Node.js Requirement**: Minimum Node.js version updated to `v20.12.0` (dropping support for Node 18).
+
+### Fixed
+- **ESLint Compatibility**: Resolved `TypeError: util.styleText is not a function` in ESLint 10 by upgrading the project's runtime requirements.
+
 ## [2.0.0] - 2026-02-20
 
 ### Added
