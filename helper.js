@@ -23,14 +23,17 @@ module.exports = {
 
   beforeTransition: () => {
     const doc = document.documentElement
-    const onTransitionDone = () => {
-      doc.classList.remove("nightwind")
-      doc.removeEventListener("transitionend", onTransitionDone)
-    }
-    doc.addEventListener("transitionend", onTransitionDone)
     if (!doc.classList.contains("nightwind")) {
       doc.classList.add("nightwind")
     }
+    // Use timeout instead of transitionend to avoid premature removal
+    // when multiple properties transition at different speeds
+    const duration = parseFloat(
+      getComputedStyle(document.body).getPropertyValue("--nightwind-transition-duration") || "400"
+    )
+    setTimeout(() => {
+      doc.classList.remove("nightwind")
+    }, duration + 100) // Small buffer to ensure all transitions complete
   },
 
   toggle: () => {

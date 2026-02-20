@@ -224,7 +224,7 @@ const nightwind = plugin(
 
     // Generate transition classes
 
-    let transitionDurationValue = "300ms"
+    let transitionDurationValue = "400ms"
     if (
       theme("nightwind.transitionDuration") === false ||
       theme("transitionDuration.nightwind") === false
@@ -268,11 +268,13 @@ const nightwind = plugin(
                 }.nightwind .${prefix}-${color}`]: {
                 transitionDuration: transitionDurationValue,
                 transitionProperty: theme("transitionProperty.colors"),
+                transitionTimingFunction: "ease-in-out",
               },
               [`${config("important") ? importantSelector : ""
                 }.nightwind .dark\\:${prefix}-${color}`]: {
                 transitionDuration: transitionDurationValue,
                 transitionProperty: theme("transitionProperty.colors"),
+                transitionTimingFunction: "ease-in-out",
               },
             }
             transitionClasses.push(transitionClass)
@@ -283,11 +285,13 @@ const nightwind = plugin(
                   }.nightwind .${prefix}-${color}-${weight}`]: {
                   transitionDuration: transitionDurationValue,
                   transitionProperty: theme("transitionProperty.colors"),
+                  transitionTimingFunction: "ease-in-out",
                 },
                 [`${config("important") ? importantSelector : ""
                   }.nightwind .dark\\:${prefix}-${color}-${weight}`]: {
                   transitionDuration: transitionDurationValue,
                   transitionProperty: theme("transitionProperty.colors"),
+                  transitionTimingFunction: "ease-in-out",
                 },
               }
               transitionClasses.push(transitionClass)
@@ -392,12 +396,14 @@ const nightwind = plugin(
                       }`]: {
                       transitionDuration: transitionDurationValue,
                       transitionProperty: theme("transitionProperty.colors"),
+                      transitionTimingFunction: "ease-in-out",
                     },
                     [`${config("important") ? importantSelector : ""
                       }.nightwind .dark\\:prose${modifier !== "DEFAULT" ? `-${modifier}` : ""
                       }`]: {
                       transitionDuration: transitionDurationValue,
                       transitionProperty: theme("transitionProperty.colors"),
+                      transitionTimingFunction: "ease-in-out",
                     },
                   }
                   transitionClasses.push(typographyTransitionClass)
@@ -456,12 +462,14 @@ const nightwind = plugin(
                       } ${classname}`]: {
                       transitionDuration: transitionDurationValue,
                       transitionProperty: theme("transitionProperty.colors"),
+                      transitionTimingFunction: "ease-in-out",
                     },
                     [`${config("important") ? importantSelector : ""
                       }.nightwind .dark\\:prose${modifier !== "DEFAULT" ? `-${modifier}` : ""
                       } ${classname}`]: {
                       transitionDuration: transitionDurationValue,
                       transitionProperty: theme("transitionProperty.colors"),
+                      transitionTimingFunction: "ease-in-out",
                     },
                   }
                   transitionClasses.push(typographyTransitionClass)
