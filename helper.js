@@ -29,9 +29,9 @@ module.exports = {
     // Use timeout instead of transitionend to avoid premature removal
     // when multiple properties transition at different speeds
     const duration = parseFloat(
-      getComputedStyle(document.body).getPropertyValue("--nightwind-transition-duration") || "400"
+      window.getComputedStyle(document.body).getPropertyValue("--nightwind-transition-duration") || "400"
     )
-    setTimeout(() => {
+    window.setTimeout(() => {
       doc.classList.remove("nightwind")
     }, duration + 100) // Small buffer to ensure all transitions complete
   },
