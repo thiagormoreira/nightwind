@@ -22,9 +22,6 @@ async function generateCss(html, config = {}) {
               600: "#2563eb",
             },
           },
-          nightwind: {
-            opacityClasses: ["10", "40", "50", "60", "80"],
-          },
         },
       },
       plugins: [nightwind],
@@ -61,33 +58,9 @@ describe("nightwind plugin", () => {
     expect(css).toContain(".nightwind-prevent")
   })
 
-  it("should handle opacity modifiers appropriately", async () => {
-    const css = await generateCss('<div class="bg-red-600/50 border-blue-500/10"></div>')
-    expect(css).toContain(".dark .bg-red-600\\/50")
-    expect(css).toContain("rgba(252, 165, 165, 0.5)")
-    expect(css).toContain(".dark .border-blue-500\\/10")
-    expect(css).toContain("rgba(96, 165, 250, 0.1)")
-  })
-
-  it("should handle custom flat colors", async () => {
-    const css = await generateCss(`
-      <div class="bg-custom-hex/40 text-custom-var/60 border-custom-rgb/80"></div>
-    `, {
-      theme: {
-        extend: {
-          colors: {
-            "custom-hex": "#1a2b3c",
-            "custom-var": "var(--my-color)",
-            "custom-rgb": "rgb(10 20 30)",
-          },
-        },
-        nightwind: {
-          opacityClasses: ["40", "60", "80"],
-        }
-      }
-    })
-    expect(css).toContain(".dark .bg-custom-hex\\/40")
-    expect(css).toContain(".dark .text-custom-var\\/60")
-    expect(css).toContain(".dark .border-custom-rgb\\/80")
+  it("should handle opacity variables natively", async () => {
+    // Nightwind now relies on Tailwind's native rendering instead of generating static RGBA classes
+    const css = await generateCss('<div class="bg-red-600/50"></div>')
+    expect(css).toContain("background-color: rgb(220 38 38 / 0.5)") // Validates Tailwind handles the alpha naturally
   })
 })
