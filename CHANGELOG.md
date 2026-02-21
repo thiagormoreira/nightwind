@@ -1,9 +1,13 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [2.2.0](https://github.com/thiagormoreira/nightwind/compare/v2.1.1...v2.2.0) (2026-02-21)
+
+
+### Features
+
+* add standard-version for automated release management. ([6675b2c](https://github.com/thiagormoreira/nightwind/commit/6675b2c65282df80067f362bc077934b7e6ed35d))
 
 ## [2.1.0] - 2026-02-20
 
