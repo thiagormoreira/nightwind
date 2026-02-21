@@ -1,3 +1,4 @@
+/** @jest-environment jsdom */
 const helper = require("../helper.js")
 
 describe("nightwind/helper", () => {
@@ -56,7 +57,7 @@ describe("nightwind/helper", () => {
     it("should return the initialization script logic", () => {
       const script = helper.init()
       expect(typeof script).toBe("string")
-      expect(script).toContain("getInitialColorMode")
+      expect(script).toContain("nightwind-mode")
     })
   })
 

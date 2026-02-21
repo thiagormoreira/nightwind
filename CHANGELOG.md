@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-02-20
+
+### Added
+- **Arbitrary Color Support**: Automatic dark mode inversion for arbitrary color values (e.g., `bg-[#ffffff]`, `text-[rgb(0,0,0)]`).
+- **Mathematical Color Inversion**: Dynamic inversion logic for hex and RGB values using `matchUtilities`.
+
+### Changed
+- **Helper Robustness**: Refactored `helper.js` into a more compact and performant script.
+- **Transition Syncing**: The plugin now injects `--nightwind-transition-duration` into `:root` for perfect synchronization with the transition helper.
+
+### Fixed
+- **Helper Compatibility**: Restored toggling of the `light` class in the helper script to ensure backward compatibility with custom CSS workflows.
+
 ## [2.0.2] - 2026-02-20
 
 ### Added
