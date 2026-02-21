@@ -1,6 +1,6 @@
 {
   "name": "@thiagormoreira/nightwind",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "An automatic, overridable, customisable Tailwind dark mode plugin",
   "main": "src/index.js",
   "repository": {
