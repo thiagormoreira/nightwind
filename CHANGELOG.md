@@ -8,15 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.1.0] - 2026-02-20
 
 ### Added
+- **Hybrid Performance Optimization**: Implemented a hybrid approach combining optimized static generation for standard colors/weights with `matchUtilities` for arbitrary values, ensuring 100% reliability for variants like `hover`, `group-hover`, and `peer-focus`.
 - **Arbitrary Color Support**: Automatic dark mode inversion for arbitrary color values (e.g., `bg-[#ffffff]`, `text-[rgb(0,0,0)]`).
-- **Mathematical Color Inversion**: Dynamic inversion logic for hex and RGB values using `matchUtilities`.
+- **ESLint Browser Support**: Added proper global definitions for `helper.js` in `eslint.config.js`.
 
 ### Changed
-- **Helper Robustness**: Refactored `helper.js` into a more compact and performant script.
-- **Transition Syncing**: The plugin now injects `--nightwind-transition-duration` into `:root` for perfect synchronization with the transition helper.
+- **Performance Pre-calculation**: Optimized the plugin logic to pre-calculate color mappings and rules, significantly reducing PostCSS processing time during Tailwind JIT.
+- **Transition Synchronization**: The plugin now injects `--nightwind-transition-duration` into `:root` (default `400ms`) for perfect sync with the transition helper.
 
 ### Fixed
-- **Helper Compatibility**: Restored toggling of the `light` class in the helper script to ensure backward compatibility with custom CSS workflows.
+- **Variant Reliability**: Fixed issues with `matchComponents` shadowing core utilities, restoring correct variant handling in dark mode.
+- **Linting Errors**: Resolved all `no-undef` and `no-unused-vars` errors in `src/index.js` and `helper.js`.
+- **Helper Compatibility**: Restored toggling of the `light` class in `helper.js` for backward compatibility with custom CSS workflows.
 
 ## [2.0.2] - 2026-02-20
 
@@ -42,13 +45,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Universal Opacity Support**: Dynamic CSS attribute selectors ([class*=".../"]) now support ANY opacity modifier (including arbitrary values like `bg-red-500/[0.3]`) with zero performance overhead.
 - **100% Color Utility Coverage**: Added support for `outline-`, `decoration-`, `accent-`, `caret-`, `fill-`, `stroke-`, and `shadow-color` (via `--tw-shadow-color`).
 - **Enhanced Transitions**: Default transition duration increased to `400ms` with `ease-in-out` for a smoother theme-switching experience.
-- **Compatibility**: Verified support for Tailwind CSS v3 and prepared for v4 "CSS-first" configuration.
 
 ### Fixed
 - **PostCSS Performance**: Resolved Out-Of-Memory (OOM) errors and hangs caused by static opacity combinatorial explosion.
 - **Color Inversion Precision**: Improved `white`/`black` inversion when modifiers are present.
 - **Utility Conflicts**: Fixed detection logic for overlapping utilities like `ring-` and `ring-offset-`.
-- **Selector Robustness**: Improved handling of `::placeholder`, `divide`, and complex pseudo-variants.
+
+## [1.3.0] - 2026-02-20
+
+### Changed
+- **Maintenance**: General refactoring and cleanup of `src/index.js`.
+- **CI/CD**: Improved GitHub Actions workflows and testing environment consistency.
+
+## [1.2.0] - 2026-02-20
+
+### Added
+- **Testing Infrastructure**: Initial setup of the Jest test suite for color inversion logic.
+- **Helper Refinement**: Initial refactor of `helper.js` for better browser compatibility.
 
 ## [1.1.13] - 2023-02-21
 

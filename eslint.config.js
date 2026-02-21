@@ -12,7 +12,10 @@ module.exports = [
                 window: true,
                 document: true,
                 console: true,
-                __dirname: true
+                __dirname: true,
+                getComputedStyle: true,
+                setTimeout: true,
+                localStorage: true
             }
         },
         rules: {

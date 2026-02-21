@@ -24,7 +24,7 @@ const invertColorValue = (value) => {
 }
 
 const nightwind = plugin(
-  function ({ addBase, addComponents, addUtilities, matchUtilities, theme, variants, config }) {
+  function ({ addBase, addComponents, matchUtilities, theme, config }) {
     const darkSelector = ".dark"
     const fixedElementClass = `${theme("nightwind.fixedClass", "nightwind-prevent")}`
     const fixedBlockClass = `${theme("nightwind.fixedBlockClass", "nightwind-prevent-block")}`
@@ -200,7 +200,6 @@ const nightwind = plugin(
     })
 
     if (theme("nightwind.typography")) {
-      const typographyValues = {}
       Object.keys(theme("typography") || {}).forEach((modifier) => {
         const css = theme(`typography.${modifier}.css`) || []
         css.forEach(n => {
