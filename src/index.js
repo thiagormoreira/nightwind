@@ -106,7 +106,7 @@ const nightwind = plugin(
     }
 
     const prefixes = ["text", "bg", "border", "ring", "ring-offset", "divide", "placeholder", "outline", "decoration", "accent", "caret", "fill", "stroke", "shadow", "from", "via", "to"]
-    const variantsList = ["", "hover", "focus", "active", "focus-within", "focus-visible", "disabled", "group-hover", "peer-focus"]
+    const variantsList = ["", "dark", "hover", "focus", "active", "focus-within", "focus-visible", "disabled", "group-hover", "peer-focus"]
 
     const properties = {
       text: { prop: "color", opacity: "--tw-text-opacity" },
@@ -149,6 +149,7 @@ const nightwind = plugin(
             const baseClass = `${p}-${colorClass}`
             let selector = ""
             if (v === "") selector = `.${baseClass}`
+            else if (v === "dark") selector = `.dark\\:${baseClass}`
             else if (v.startsWith("group-")) selector = `.group:${v.replace("group-", "")} .${v}\\:${baseClass}`
             else if (v.startsWith("peer-")) selector = `.peer:${v.replace("peer-", "")} ~ .${v}\\:${baseClass}`
             else selector = `.${v}\\:${baseClass}:${v}`
@@ -158,15 +159,18 @@ const nightwind = plugin(
             const s = `${importantSelector}${darkSelector} ${selector}`
             const preventS = `${s}.${fixedElementClass}, ${importantSelector}${darkSelector} .${fixedBlockClass} ${selector}`
 
+            const currentVal = v === "dark" ? defVal : val
+            const currentDefVal = defVal
+
             if (config.stops) {
-              nightwindClasses[s] = { "--tw-gradient-from": val + importantProperty, "--tw-gradient-stops": `var(--tw-gradient-from), var(--tw-gradient-to, ${hexToRGB(val, "0")})` + importantProperty }
-              nightwindClasses[preventS] = { "--tw-gradient-from": defVal + importantProperty, "--tw-gradient-stops": `var(--tw-gradient-from), var(--tw-gradient-to, ${hexToRGB(defVal, "0")})` + importantProperty }
+              nightwindClasses[s] = { "--tw-gradient-from": currentVal + importantProperty, "--tw-gradient-stops": `var(--tw-gradient-from), var(--tw-gradient-to, ${hexToRGB(currentVal, "0")})` + importantProperty }
+              nightwindClasses[preventS] = { "--tw-gradient-from": currentDefVal + importantProperty, "--tw-gradient-stops": `var(--tw-gradient-from), var(--tw-gradient-to, ${hexToRGB(currentDefVal, "0")})` + importantProperty }
             } else if (config.via) {
-              nightwindClasses[s] = { "--tw-gradient-stops": `var(--tw-gradient-from), ${val}, var(--tw-gradient-to, ${hexToRGB(val, "0")})` + importantProperty }
-              nightwindClasses[preventS] = { "--tw-gradient-stops": `var(--tw-gradient-from), ${defVal}, var(--tw-gradient-to, ${hexToRGB(defVal, "0")})` + importantProperty }
+              nightwindClasses[s] = { "--tw-gradient-stops": `var(--tw-gradient-from), ${currentVal}, var(--tw-gradient-to, ${hexToRGB(currentVal, "0")})` + importantProperty }
+              nightwindClasses[preventS] = { "--tw-gradient-stops": `var(--tw-gradient-from), ${currentDefVal}, var(--tw-gradient-to, ${hexToRGB(currentDefVal, "0")})` + importantProperty }
             } else {
-              nightwindClasses[s] = { [config.prop]: val + importantProperty }
-              nightwindClasses[preventS] = { [config.prop]: defVal + importantProperty }
+              nightwindClasses[s] = { [config.prop]: currentVal + importantProperty }
+              nightwindClasses[preventS] = { [config.prop]: currentDefVal + importantProperty }
             }
 
             // Transition classes
