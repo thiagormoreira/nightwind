@@ -30,6 +30,7 @@ You can see it in action on https://nightwindcss.com
    - [Hybrid mapping](#hybrid-mapping)
 6. [Overrides](#overrides)
 7. [Typography](#typography)
+8. [Tailwind CSS v4 Support](#tailwind-css-v4-support)
 
 ## Installation
 
@@ -707,3 +708,35 @@ module.exports = {
   },
 }
 ```
+## Tailwind CSS v4 Support
+
+Nightwind is compatible with **Tailwind CSS v4** through its compatibility layer.
+
+### How to use Nightwind with v4
+
+To use Nightwind in a Tailwind v4 project, you must maintain a `tailwind.config.js` (or `.ts`) file to define your theme colors and plugins. This is because Nightwind's engine needs to iterate over the JavaScript theme object to automatically generate dark mode classes.
+
+```js
+// tailwind.config.js
+module.exports = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      // Your theme here
+    }
+  },
+  plugins: [require("@thiagormoreira/nightwind")]
+}
+```
+
+In your main CSS file, import Tailwind and your config:
+
+```css
+@import "tailwindcss";
+@config "../tailwind.config.js";
+```
+
+### Known Limitations
+
+- **Native CSS-only Theme**: Currently, Nightwind **does not support** themes defined exclusively within v4's new `@theme` CSS blocks. If you migrate your colors entirely to CSS variables without a backing JS configuration, Nightwind will not be able to detect and invert them automatically.
+- **Support Strategy**: We are actively monitoring Tailwind v4's internal APIs to provide native, CSS-first support in a future major release.
