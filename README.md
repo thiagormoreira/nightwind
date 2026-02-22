@@ -1,6 +1,6 @@
 ![Nightwind cover image](https://github.com/jjranalli/nightwind-demo/raw/master/nightwindcss.com/public/nightwind-logotext.png)
 
-IMPORTANT: This repository is a maintained fork of the original "nightwind" project (https://github.com/jjranalli/nightwind). The original package was abandoned by its author. I (thiagormoreira) forked the project and will continue maintaining and publishing updates, fixes and compatibility improvements here.
+IMPORTANT: This repository is a maintained fork of the original "nightwind" project (https://github.com/jjranalli/nightwind). This fork is actively maintained, featuring **100% test coverage**, support for modern Tailwind CSS (v3+), and additional features like manual `dark:` overrides.
 
 ---
 
@@ -659,6 +659,50 @@ module.exports = {
           200: "yellow.300",
         },
       },
+    },
+  },
+}
+```
+
+## Overrides
+
+### The `dark:` prefix (v2.3.0+)
+
+By default, Nightwind automatically inverts all color classes. However, you may want to force a specific color in dark mode for a particular element, bypassing the automatic inversion.
+
+You can achieve this by using the standard Tailwind `dark:` prefix. When Nightwind detects a `dark:` color class, it will apply that exact color in dark mode instead of calculating an inverted version.
+
+```html
+<!-- Automatically inverted (bg-blue-600 becomes bg-blue-300 in dark mode) -->
+<div class="bg-blue-600"></div>
+
+<!-- Forced color (stays red-500 in dark mode) -->
+<div class="bg-blue-600 dark:bg-red-500"></div>
+```
+
+This acts as a "manual override" for developers who need fine-grained control over specific components while still enjoying the benefits of automatic dark mode elsewhere.
+
+## Typography
+
+Nightwind provides out-of-the-box support for the official `@tailwindcss/typography` plugin.
+
+When the `prose` class is used, Nightwind automatically handles the transitions and applies the `prose-invert` behavior (calculating the inverted colors for your typography) when dark mode is enabled.
+
+```html
+<article class="prose">
+  <h1>My Awesome Title</h1>
+  <p>This will be automatically inverted in dark mode.</p>
+</article>
+```
+
+You can enable/disable typography support in your `tailwind.config.js`:
+
+```js
+// tailwind.config.js
+module.exports = {
+  theme: {
+    nightwind: {
+      typography: true, // enabled by default
     },
   },
 }
