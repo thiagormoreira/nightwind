@@ -5,7 +5,8 @@ const plugin = require("tailwindcss/plugin")
  * Supports CSS Color Level 4 and returns comma-separated format for tests.
  */
 const processColor = (value, shouldInvert = true) => {
-  if (!value || typeof value !== "string" || value.includes("var(")) return value
+  if (!value) return value
+  if (value.includes("var(")) return value
 
   let r, g, b, a = 1
 
@@ -19,22 +20,28 @@ const processColor = (value, shouldInvert = true) => {
       a = (parseInt(hex.slice(6, 8), 16) / 255).toFixed(3)
       hex = hex.slice(0, 6)
     }
-    if (hex.length === 6) {
-      r = parseInt(hex.slice(0, 2), 16)
-      g = parseInt(hex.slice(2, 4), 16)
-      b = parseInt(hex.slice(4, 6), 16)
-    } else return value
+
+    if (hex.length !== 6) return value
+
+    r = parseInt(hex.slice(0, 2), 16)
+    g = parseInt(hex.slice(2, 4), 16)
+    b = parseInt(hex.slice(4, 6), 16)
   } else {
     const rgbMatch = value.match(/rgba?\((\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s\/]+([\d.%]+))?\)/)
-    if (rgbMatch) {
-      r = parseInt(rgbMatch[1])
-      g = parseInt(rgbMatch[2])
-      b = parseInt(rgbMatch[3])
-      if (rgbMatch[4]) {
-        let alpha = rgbMatch[4]
-        a = alpha.endsWith("%") ? (parseFloat(alpha) / 100).toFixed(3) : parseFloat(alpha)
+    if (!rgbMatch) return value
+
+    r = parseInt(rgbMatch[1])
+    g = parseInt(rgbMatch[2])
+    b = parseInt(rgbMatch[3])
+
+    if (rgbMatch[4]) {
+      const alphaVal = rgbMatch[4]
+      if (alphaVal.endsWith("%")) {
+        a = (parseFloat(alphaVal) / 100).toFixed(3)
+      } else {
+        a = parseFloat(alphaVal)
       }
-    } else return value
+    }
   }
 
   if (shouldInvert) {
@@ -43,13 +50,12 @@ const processColor = (value, shouldInvert = true) => {
     b = 255 - b
   }
 
-  if (a == 1 || a == "1") return `rgb(${r}, ${g}, ${b})`
-  return `rgba(${r}, ${g}, ${b}, ${a})`
+  return a == 1 ? `rgb(${r}, ${g}, ${b})` : `rgba(${r}, ${g}, ${b}, ${a})`
 }
 
 const nightwind = plugin(
   function ({ addBase, addComponents, matchUtilities, theme, config }) {
-    const darkModeConfig = config("darkMode")
+    const darkModeConfig = config("darkMode", "class")
     const isDarkModeSelector = Array.isArray(darkModeConfig) ? darkModeConfig[0] === "class" : darkModeConfig === "class"
     const darkSelector = isDarkModeSelector ? (Array.isArray(darkModeConfig) ? darkModeConfig[1] || ".dark" : ".dark") : "@media (prefers-color-scheme: dark)"
 
@@ -94,7 +100,7 @@ const nightwind = plugin(
 
     // 1. Loop for standard theme colors
     Object.entries(colors).forEach(([colorName, colorValue]) => {
-      const isStandard = typeof colorValue === "object" && colorValue !== null
+      const isStandard = colorValue && typeof colorValue === "object"
       const weightsToProcess = isStandard ? Object.keys(colorValue) : ["DEFAULT"]
 
       weightsToProcess.forEach(weight => {
@@ -102,13 +108,12 @@ const nightwind = plugin(
         const resolvedValue = theme(`colors.${colorPath}`)
         if (typeof resolvedValue !== "string") return
 
-        // Tracking theme colors to avoid greedy matchUtilities capture
         themeColorValues[resolvedValue.toLowerCase()] = true
 
         let invertedValue = resolvedValue
         if (isStandard && !isNaN(weight)) {
-          const w = Number(weight)
-          const weightIndex = weights.indexOf(w)
+          const weightNum = Number(weight)
+          const weightIndex = weights.indexOf(weightNum)
           if (weightIndex !== -1) {
             invertedValue = theme(`colors.${colorName}.${weights[9 - weightIndex]}`) || resolvedValue
           }
@@ -120,14 +125,13 @@ const nightwind = plugin(
           const escapedBase = baseClass.replace(/:/g, "\\:").replace(/\//g, "\\/")
 
           variantsList.forEach(v => {
-            let selector = v === "" ? `.${escapedBase}` : `.${v}\\:${escapedBase}:${v}`
+            const selector = v === "" ? `.${escapedBase}` : `.${v}\\:${escapedBase}:${v}`
             let val = inverted
             if (opacityVar) val = inverted.replace("rgb(", "rgba(").replace(")", `, var(${opacityVar}, 1))`)
-            nightwindClasses[v === "" ? `${darkSelector} ${selector}` : `${darkSelector} ${selector}`] = { [prop]: val + importantSuffix }
+            nightwindClasses[`${darkSelector} ${selector}`] = { [prop]: val + importantSuffix }
             nightwindClasses[`${selector}.${fixedElementClass}, .${fixedBlockClass} ${selector}`] = { [prop]: processColor(resolvedValue, false) + importantSuffix }
           })
 
-          // Manual Override (addBase to avoid JIT wrap)
           if (!darkSelector.startsWith("@media")) {
             const darkManualSelector = `.dark\\:${escapedBase}`
             let darkManualValue = processColor(resolvedValue, false)
@@ -135,7 +139,6 @@ const nightwind = plugin(
             manualOverrides[`${darkSelector} ${darkManualSelector}`] = { [prop]: darkManualValue + importantSuffix }
           }
 
-          // Extra variants
           const extras = [
             { s: `.group:hover .group-hover\\:${escapedBase}` },
             { s: `.peer:focus ~ .peer-focus\\:${escapedBase}` }
@@ -143,7 +146,12 @@ const nightwind = plugin(
           extras.forEach(({ s }) => {
             let val = inverted
             if (opacityVar) val = inverted.replace("rgb(", "rgba(").replace(")", `, var(${opacityVar}, 1))`)
-            nightwindClasses[`${darkSelector} ${s}`] = { [prop]: val + importantSuffix }
+            if (darkSelector.startsWith("@media")) {
+              nightwindClasses[darkSelector] = nightwindClasses[darkSelector] || {}
+              nightwindClasses[darkSelector][s] = { [prop]: val + importantSuffix }
+            } else {
+              nightwindClasses[`${darkSelector} ${s}`] = { [prop]: val + importantSuffix }
+            }
             nightwindClasses[`${s}.${fixedElementClass}, .${fixedBlockClass} ${s}`] = { [prop]: processColor(resolvedValue, false) + importantSuffix }
           })
         })
@@ -158,12 +166,10 @@ const nightwind = plugin(
       matchUtilities(
         {
           [prefix]: (value) => {
-            if (typeof value !== "string") return null
-            // Check if this is a theme color value (already handled)
             if (themeColorValues[value.toLowerCase()]) return null
-
             const invertedValue = processColor(value, true)
             if (invertedValue === value) return null
+
             const styles = {}
             if (darkSelector.startsWith("@media")) {
               styles[darkSelector] = { "&": { [prop]: invertedValue } }
@@ -181,15 +187,17 @@ const nightwind = plugin(
     // 3. Typography Support
     if (theme("nightwind.typography") !== false) {
       const proseSelector = theme("nightwind.typographySelector", ".prose")
-      const typographyTheme = theme("typography.DEFAULT.css", [])
+      const typographyTheme = theme("typography.DEFAULT.css", {})
       const darkTypographyVars = {}
       const extractColors = (obj) => {
         Object.entries(obj || {}).forEach(([key, val]) => {
-          if (typeof val === "string" && (val.startsWith("#") || val.startsWith("rgb"))) {
-            if (key.startsWith("--tw-prose-")) {
-              darkTypographyVars[key] = processColor(val, true)
+          if (typeof val === "string") {
+            if (val.startsWith("#") || val.startsWith("rgb")) {
+              if (key.startsWith("--tw-prose-")) {
+                darkTypographyVars[key] = processColor(val, true)
+              }
             }
-          } else if (typeof val === "object" && val !== null) {
+          } else if (val && typeof val === "object") {
             extractColors(val)
           }
         })
@@ -197,11 +205,12 @@ const nightwind = plugin(
       if (Array.isArray(typographyTheme)) {
         typographyTheme.forEach(extractColors)
       } else {
-        extractColors(typographyTheme || {})
+        extractColors(typographyTheme)
       }
       if (Object.keys(darkTypographyVars).length > 0) {
+        const typographyStyles = { [proseSelector]: darkTypographyVars }
         if (darkSelector.startsWith("@media")) {
-          addComponents({ [darkSelector]: { [proseSelector]: darkTypographyVars } })
+          addComponents({ [darkSelector]: typographyStyles })
         } else {
           addComponents({ [`${darkSelector} ${proseSelector}`]: darkTypographyVars })
         }

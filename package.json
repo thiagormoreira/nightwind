@@ -28,6 +28,7 @@
   "homepage": "https://github.com/thiagormoreira/nightwind#readme",
   "scripts": {
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
     "prepare": "husky",

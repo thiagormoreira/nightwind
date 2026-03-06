@@ -33,7 +33,7 @@ describe("nightwind dark override prefix", () => {
         const css = await generateCss('<div class="bg-blue-500 dark:bg-red-500"></div>')
         expect(css).toContain(".dark .bg-blue-500")
         expect(css).toContain(".dark .dark\\:bg-red-500")
-        expect(css).toContain("background-color: rgba(239, 68, 68, var(--tw-bg-opacity, 1))")
+        expect(css).toContain("background-color: rgb(239 68 68 / var(--tw-bg-opacity, 1))")
     })
 
     it("should effectively override even when important is true", async () => {
@@ -42,6 +42,6 @@ describe("nightwind dark override prefix", () => {
         })
         expect(css).toContain(".dark .bg-blue-500")
         expect(css).toMatch(/\.dark .dark\\:bg-red-500/)
-        expect(css).toContain("background-color: rgba(239, 68, 68, var(--tw-bg-opacity, 1)) !important")
+        expect(css).toContain("background-color: rgb(239 68 68 / var(--tw-bg-opacity, 1)) !important")
     })
 })
