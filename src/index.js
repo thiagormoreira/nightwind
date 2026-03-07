@@ -135,10 +135,8 @@ const nightwind = plugin(
 
     const getGradientValue0 = (val) => {
       if (!val) return val
-      // Normalize legacy syntax (commas) to modern syntax (spaces) before adding alpha
-      const normalized = val.replace(/^(hsla?\()([^)]+)\)$/, (_, fn, args) => {
-        return fn + args.replace(/,\s*/g, " ") + ")"
-      })
+      // Normalize legacy syntax (commas) to modern syntax (spaces) for consistency
+      const normalized = val.replace(/,\s*/g, " ")
       return /\//.test(normalized)
         ? normalized.replace(/\/[\s\d.%]+\)$/, "/ 0)")
         : normalized.replace(/\)$/, " / 0)")

@@ -26,16 +26,13 @@ describe("nightwind coverage tests", () => {
         expect(nightwind.processColor("oklch(20% 0.1 10)", true)).toBe("oklch(80% 0.1 10)")
         expect(nightwind.processColor("rgb(0 0 0 / 50%)", true)).toBe("rgb(255 255 255 / 0.5)")
         expect(nightwind.processColor(" oklch(0.2 0.1 10) ", false)).toBe("oklch(0.2 0.1 10)")
-        // Verify early return for OKLCH (no formatting change)
         expect(nightwind.processColor("oklch(20% 0.1 10)", false)).toBe("oklch(20% 0.1 10)")
     })
 
     it("should handle HSL colors and alpha", () => {
-        // Inversion: h preserved, l = 100 - 60 = 40
         expect(nightwind.processColor("hsl(217, 91%, 60%)", true)).toBe("hsl(217 91% 40%)")
         expect(nightwind.processColor("hsla(217deg 91% 60% / 0.5)", true)).toBe("hsl(217deg 91% 40% / 0.5)")
         expect(nightwind.processColor("hsla(0.5turn 50% 50% / 10%)", true)).toBe("hsl(0.5turn 50% 50% / 0.1)")
-        // Verify comma preservation via early return
         expect(nightwind.processColor("hsl(217, 91%, 60%)", false)).toBe("hsl(217, 91%, 60%)")
     })
 
@@ -51,7 +48,6 @@ describe("nightwind coverage tests", () => {
         expect(nightwind.processColor("#fff", true)).toBe("rgb(0 0 0)")
         expect(nightwind.processColor("#0000", true)).toBe("rgb(255 255 255 / 0)")
         expect(nightwind.processColor("#00000000", true)).toBe("rgb(255 255 255 / 0)")
-        // Option B: functional normalization for hex even without inversion
         expect(nightwind.processColor("#ff0000", false)).toBe("rgb(255 0 0)")
     })
 
