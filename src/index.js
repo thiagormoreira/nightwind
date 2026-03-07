@@ -300,7 +300,7 @@ const nightwind = plugin(
       via: (val, val0) => ({
         "--tw-gradient-stops": `var(--tw-gradient-from), ${val}, var(--tw-gradient-to, ${val0})`
       }),
-      to: (val, _val0) => ({ "--tw-gradient-to": val }),
+      to: (val) => ({ "--tw-gradient-to": val }),
     }
 
     Object.entries(gradientMatchConfig).forEach(([prefix, buildStyles]) => {

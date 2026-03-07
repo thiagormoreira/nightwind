@@ -7,8 +7,8 @@ module.exports = {
     global: {
       branches: 80,
       functions: 80,
-      lines: 99,
-      statements: 99,
+      lines: 100,
+      statements: 100,
     },
   },
   coverageDirectory: "coverage",

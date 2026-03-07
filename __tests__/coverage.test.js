@@ -114,6 +114,11 @@ describe("nightwind coverage tests", () => {
         expect(css).toContain("--tw-prose-body: hsl(217deg 91% 40%)")
     })
 
+    it("should cover getGradientValue0 legacy normalization", async () => {
+        const css = await generateCss('<div class="from-[hsl(217,91%,60%)]"></div>')
+        expect(css).toContain("hsl(217 91% 60% / 0)")
+    })
+
     it("should cover typography in class mode for line coverage", async () => {
         const css = await generateCss('<div class="prose"></div>', {
             theme: {
