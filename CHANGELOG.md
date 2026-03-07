@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.4.0](https://github.com/thiagormoreira/nightwind/compare/v2.3.0...v2.4.0) (2026-03-07)
+
+### Added
+- **Modern Color Support**: Full support for CSS Color Level 4, including `oklch()`, `hsl()`, and `hsla()`.
+- **Advanced HSL Inversion**: Semantic inversion for HSL colors that preserves Hue/Matiz and inverts only Lightness.
+- **Universal Angle Units**: Support for `deg`, `grad`, `rad`, and `turn` in HSL hue definitions.
+- **Gradient JIT Support**: Robust inversion of arbitrary gradient values with automatic legacy-to-modern syntax normalization to prevent invalid CSS.
+- **Future-Proofing (Tailwind v4)**: Removed legacy `opacityVar` dependency, aligning with Tailwind v4's high-performance color engine.
+
+### Changed
+- **Performance Optimization**: Implemented extreme hoisting of style objects and color parsing outside critical loops.
+- **Functional Normalization (Option B)**: Enforced functional format return (`rgb()`, `hsl()`) for all colors to ensure stability across JIT utilites.
+- **Alpha Consistency**: Uniform alpha channel normalization across RGB, HSL, and OKLCH (0-1 float range).
+- **Format Preservation**: Preservation of original formatting (spaces vs commas) for HSL/OKLCH when inversion is not required.
+
+### Fixed
+- **Gradient Alpha Bug**: Resolved double-alpha issues and fixed percentage-based alpha support in gradients.
+- **Dead Code Cleanup**: Removed unused `themeColorValues` logic and internal redundancies.
+- **Structural CSS Issues**: Fixed incorrect positioning of `fixedElementClass` and resolved `@media` flat-key selector bugs.
+- **Typography Sync**: Corrected HSL detection and inversion within typography selectors.
+
+
 ## [2.3.0](https://github.com/thiagormoreira/nightwind/compare/v2.2.1...v2.3.0) (2026-02-22)
 
 
