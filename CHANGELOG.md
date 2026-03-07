@@ -2,7 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [2.4.1](https://github.com/thiagormoreira/nightwind/compare/v2.4.0...v2.4.1) (2026-03-07)
+## [2.5.0](https://github.com/thiagormoreira/nightwind/compare/v2.4.1...v2.5.0) (2026-03-07)
+
+### Added
+- **View Transitions API Support**: Integrated native browser View Transitions API for cinematic theme switching.
+- **Cinematic Ripple Effect**: Added an optional 'ripple' animation that expands from the user's click point.
+- **Toggle Animation Options**: Refactored `nightwind.toggle()` and `nightwind.enable()` to accept `animation: 'fade' | 'ripple' | 'none'`.
+- **Advanced Transition Orchestration**: Implemented zero-conflict logic that deactivates CSS transitions during View Transitions for perfect visual snapshots.
+
+### Fixed
+- **API Reference Bug**: Corrected global View Transition API reference from `documentElement` to `document`.
+- **Double-call Bug**: Refactored internal architecture to prevent redundant transition triggers in fallback mode.
+- **Backward Compatibility**: Guaranteed 100% stable fallbacks for browsers without View Transition support.
 
 ### Fixed
 - **Branch Coverage**: Achieved 100% Branch Coverage by refactoring `@media` initialization logic and handling remaining edge cases in theme colors and typography.

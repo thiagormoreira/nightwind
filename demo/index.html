@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nightwind Demo - Testes de Desenvolvimento</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        // Simulação do nightwind.init() para a demo estática
+        (function () {
+            function getInitialColorMode() {
+                const persistedColorPreference = window.localStorage.getItem('nightwind-mode');
+                if (persistedColorPreference) return persistedColorPreference;
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            if (getInitialColorMode() === 'dark') document.documentElement.classList.add('dark');
+        })();
+    </script>
+    <style>
+        .nightwind,
+        .nightwind * {
+            transition-duration: 300ms;
+            transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* View Transition Styles */
+        ::view-transition-group(root) {
+            animation-duration: 0.7s;
+        }
+
+        .ripple-transition::view-transition-old(root),
+        .ripple-transition::view-transition-new(root) {
+            animation: none;
+            mix-blend-mode: normal;
+        }
+
+        ::view-transition-old(root) {
+            z-index: 1;
+        }
+
+        ::view-transition-new(root) {
+            z-index: 9999;
+        }
+    </style>
+</head>
+
+<body class="bg-white text-gray-900 min-h-screen p-8">
+    <div id="api-status" class="fixed bottom-4 left-4 text-xs opacity-50"></div>
+
+    <!-- Botão de Toggle -->
+    <div class="fixed top-4 right-4 z-50 flex flex-col items-end gap-3">
+        <button id="toggle-default"
+            class="bg-gray-800 text-white dark:bg-indigo-100 dark:text-indigo-900 border-2 border-transparent px-5 py-2.5 rounded-full shadow-xl font-bold transition-all hover:scale-105 active:scale-95 text-sm">
+            Toggle (View Transition Fade)
+        </button>
+        <button id="toggle-ripple"
+            class="bg-indigo-600 text-white px-5 py-2.5 rounded-full shadow-xl font-bold transition-all hover:scale-105 active:scale-95 text-sm ring-4 ring-indigo-200 dark:ring-indigo-900">
+            Toggle (Ripple Effect)
+        </button>
+        <button id="toggle-none"
+            class="bg-gray-400 text-white px-5 py-2.5 rounded-full shadow-xl font-bold transition-all hover:text-gray-100 active:scale-95 text-sm">
+            Toggle (Standard CSS)
+        </button>
+    </div>
+
+    <header class="mb-12 text-center">
+        <h1 class="text-4xl font-extrabold mb-4 text-primary-600">Nightwind Demo</h1>
+        <p class="text-gray-600 text-lg">Testes abrangentes de todos os casos de uso do plugin.</p>
+    </header>
+
+    <main class="max-w-5xl mx-auto space-y-16">
+
+        <!-- Cores Básicas -->
+        <section id="cores-basicas">
+            <h2 class="text-2xl font-bold mb-6 border-b pb-2">1. Cores Básicas (bg, text, border)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-gray-100 p-6 rounded-xl border border-gray-200">
+                    <p class="text-gray-800">Cores Cinza (Padrão)</p>
+                </div>
+                <div class="bg-blue-500 text-white p-6 rounded-xl border-4 border-blue-700">
+                    <p class="font-bold">Azul Vibrante</p>
+                </div>
+                <div class="bg-red-50 text-red-900 p-6 rounded-xl border border-red-200">
+                    <p>Contraste Suave (50/900)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Variantes e Estados -->
+        <section id="variantes">
+            <h2 class="text-2xl font-bold mb-6 border-b pb-2">2. Variantes e Estados</h2>
+            <div class="flex flex-wrap gap-4">
+                <button class="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg transition-colors">
+                    Hover Me
+                </button>
+                <input type="text" placeholder="Focus Me"
+                    class="border-2 border-gray-300 focus:border-primary-500 p-3 rounded-lg outline-none bg-white">
+                <div class="group bg-yellow-100 p-4 rounded-lg cursor-pointer hover:bg-yellow-200">
+                    <p class="text-yellow-800 group-hover:text-yellow-900 font-bold">Group Hover</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Classes Estendidas -->
+        <section id="estendidas">
+            <h2 class="text-2xl font-bold mb-6 border-b pb-2">3. Classes Estendidas (Ring, Divide, Placeholder)</h2>
+            <div class="space-y-8">
+                <div class="flex gap-8">
+                    <button
+                        class="ring-4 ring-purple-300 ring-offset-2 ring-offset-white bg-purple-600 text-white px-4 py-2 rounded">
+                        Ring Purple
+                    </button>
+                    <input type="text" placeholder="Placeholder Rosa" class="placeholder-rose-400 border p-2 rounded">
+                </div>
+                <div class="divide-y divide-green-300 border border-green-300 rounded-lg overflow-hidden">
+                    <div class="p-4 bg-green-50">Item 1</div>
+                    <div class="p-4 bg-green-50">Item 2</div>
+                    <div class="p-4 bg-green-50">Item 3</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gradientes -->
+        <section id="gradientes">
+            <h2 class="text-2xl font-bold mb-6 border-b pb-2">4. Gradientes Automáticos</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div
+                    class="bg-gradient-to-r from-cyan-500 to-blue-500 h-32 rounded-2xl flex items-center justify-center text-white font-black text-xl">
+                    Cyan to Blue
+                </div>
+                <div
+                    class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 h-32 rounded-2xl flex items-center justify-center text-white font-black text-xl">
+                    Triple Gradient
+                </div>
+            </div>
+        </section>
+
+        <!-- Prevenção -->
+        <section id="prevencao">
+            <h2 class="text-2xl font-bold mb-6 border-b pb-2">5. Prevenção (nightwind-prevent)</h2>
+            <div class="flex gap-8">
+                <div class="bg-amber-400 nightwind-prevent p-6 rounded-xl text-black">
+                    <p class="font-bold">Sempre Amber (Prevent)</p>
+                </div>
+                <div class="bg-emerald-500 nightwind-prevent-block p-6 rounded-xl text-white">
+                    <p class="mb-2">Bloco de Prevenção</p>
+                    <span class="bg-white text-emerald-600 px-2 py-1 rounded">Filho Imutável</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Overrides -->
+        <section id="overrides">
+            <h2 class="text-2xl font-bold mb-6 border-b pb-2">6. Overrides (dark: prefix)</h2>
+            <div class="bg-blue-600 dark:bg-orange-500 p-8 rounded-2xl text-white text-center">
+                <p class="text-xl font-bold">Azul no Light, Laranja no Dark</p>
+                <p class="text-sm opacity-80 mt-2">Usando dark:bg-orange-500</p>
+            </div>
+        </section>
+
+        <!-- Tipografia -->
+        <section id="tipografia">
+            <h2 class="text-2xl font-bold mb-6 border-b pb-2">7. Tipografia (Prose)</h2>
+            <article class="prose lg:prose-xl bg-gray-50 p-8 rounded-3xl border border-gray-200">
+                <h1>Título do Artigo</h1>
+                <p>Este texto usa o plugin <code>@tailwindcss/typography</code>. O Nightwind deve aplicar
+                    <code>prose-invert</code> automaticamente ou gerenciar os tokens de cor da tipografia.
+                </p>
+                <ul>
+                    <li>Item de lista automático</li>
+                    <li>Links com cores que invertem</li>
+                </ul>
+            </article>
+        </section>
+
+        <!-- Mapeamentos -->
+        <section id="mapeamentos">
+            <h2 class="text-2xl font-bold mb-6 border-b pb-2">8. Mapeamentos Customizados</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-rose-500 p-6 rounded-xl text-white">
+                    <p class="font-bold">Rose -> Blue (Mapeamento de Classe)</p>
+                </div>
+                <div class="bg-primary-500 p-6 rounded-xl text-white">
+                    <p class="font-bold">Cores Customizadas (Primary)</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="mt-24 py-12 text-center border-t text-gray-500">
+        Nightwind Demo &copy; 2026
+    </footer>
+
+    <script type="module">
+        // Importação simulada do helper para a demo estática
+        const nightwind = {
+            beforeTransition: () => {
+                const doc = document.documentElement
+                doc.classList.add("nightwind")
+                setTimeout(() => doc.classList.remove("nightwind"), 320)
+            },
+            toggle: (options = {}) => {
+                const { animation = 'fade', event = null } = options
+                const doc = document.documentElement
+
+                // Função pura — SEM lógica de transição aqui dentro
+                const applyChange = () => {
+                    const isDark = doc.classList.toggle("dark")
+                    doc.classList.toggle("light", !isDark)
+                    window.localStorage.setItem('nightwind-mode', isDark ? 'dark' : 'light');
+                }
+
+                // Fallback: sem View Transitions ou animação desativada
+                if (!document.startViewTransition || animation === 'none') {
+                    nightwind.beforeTransition()
+                    applyChange()
+                    return
+                }
+
+                // Ripple
+                if (animation === 'ripple' && event) {
+                    const { clientX: x, clientY: y } = event
+                    doc.classList.add('ripple-transition')
+
+                    const transition = document.startViewTransition(applyChange)
+
+                    transition.finished.finally(() => {
+                        doc.classList.remove('ripple-transition')
+                    })
+
+                    transition.ready.then(() => {
+                        const radius = Math.hypot(
+                            Math.max(x, window.innerWidth - x),
+                            Math.max(y, window.innerHeight - y)
+                        )
+                        doc.animate(
+                            {
+                                clipPath: [
+                                    `circle(0px at ${x}px ${y}px)`,
+                                    `circle(${radius}px at ${x}px ${y}px)`
+                                ]
+                            },
+                            {
+                                duration: 700,
+                                easing: 'ease-in-out',
+                                pseudoElement: '::view-transition-new(root)'
+                            }
+                        )
+                    })
+                    return
+                }
+
+                document.startViewTransition(applyChange)
+            }
+        };
+
+        document.getElementById('toggle-default').addEventListener('click', () => nightwind.toggle({ animation: 'fade' }));
+        document.getElementById('toggle-ripple').addEventListener('click', (e) => nightwind.toggle({ animation: 'ripple', event: e }));
+        document.getElementById('toggle-none').addEventListener('click', () => nightwind.toggle({ animation: 'none' }));
+
+        const status = document.getElementById('api-status');
+        if (document.startViewTransition) {
+            status.innerText = "✅ View Transitions API suportada";
+            status.classList.add("text-green-600");
+        } else {
+            status.innerText = "❌ View Transitions API NÃO suportada (usando fallback)";
+            status.classList.add("text-red-600");
+        }
+    </script>
+</body>
+
+</html>

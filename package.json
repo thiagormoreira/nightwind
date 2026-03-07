@@ -1,6 +1,6 @@
 {
   "name": "@thiagormoreira/nightwind",
-  "version": "2.4.1",
+  "version": "2.5.0",
   "description": "An automatic, overridable, customisable Tailwind dark mode plugin",
   "main": "src/index.js",
   "repository": {
@@ -34,13 +34,16 @@
     "prepare": "husky",
     "preversion": "npm run lint && npm run test",
     "postversion": "git push --follow-tags",
-    "release": "standard-version && git push --follow-tags"
+    "release": "standard-version && git push --follow-tags",
+    "demo:build": "tailwindcss -i ./demo/input.css -o ./demo/style.css --config ./demo/tailwind.config.js",
+    "demo:dev": "tailwindcss -i ./demo/input.css -o ./demo/style.css --config ./demo/tailwind.config.js --watch"
   },
   "engines": {
     "node": ">=20.12.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.0",
+    "@tailwindcss/typography": "^0.5.19",
     "autoprefixer": "^10.4.24",
     "eslint": "^10.0.0",
     "eslint-plugin-jest": "^29.15.0",

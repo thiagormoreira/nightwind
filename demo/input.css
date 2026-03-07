@@ -1,0 +1,32 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* Estilos específicos da demo caso necessário */
+.nightwind,
+.nightwind * {
+    transition-duration: 300ms;
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Durante qualquer View Transition, desativamos as transições de CSS individuais do Nightwind */
+::view-transition-group(root) {
+    animation-duration: 0.5s;
+}
+
+/* Apenas para o efeito ripple, desativamos a animação padrão de fade */
+.ripple-transition::view-transition-old(root),
+.ripple-transition::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+/* Garante que o conteúdo antigo não suma instantaneamente no ripple */
+::view-transition-old(root) {
+    z-index: 1;
+}
+
+::view-transition-new(root) {
+    z-index: 9999;
+}
