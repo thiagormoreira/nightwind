@@ -3,26 +3,142 @@
 @import "tailwindcss/utilities";
 
 /* Estilos específicos da demo caso necessário */
-.nightwind,
-.nightwind * {
-    transition-duration: 300ms;
-    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+/* Slide Left */
+html.slide-left::view-transition-old(root) {
+    animation: none;
+    transform: translateX(0);
+}
+
+html.slide-left::view-transition-new(root) {
+    animation: slide-in-left var(--nw-anim-duration, 600ms) var(--nw-anim-easing, ease-in-out);
+}
+
+@keyframes slide-in-left {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* Slide Right */
+html.slide-right::view-transition-old(root) {
+    animation: none;
+}
+
+html.slide-right::view-transition-new(root) {
+    animation: slide-in-right var(--nw-anim-duration, 600ms) var(--nw-anim-easing, ease-in-out);
+}
+
+@keyframes slide-in-right {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* Slide Top */
+html.slide-top::view-transition-new(root) {
+    animation: slide-in-top var(--nw-anim-duration, 600ms) var(--nw-anim-easing, ease-in-out);
+}
+
+@keyframes slide-in-top {
+    from {
+        transform: translateY(-100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* Slide Bottom */
+html.slide-bottom::view-transition-new(root) {
+    animation: slide-in-bottom var(--nw-anim-duration, 600ms) var(--nw-anim-easing, ease-in-out);
+}
+
+@keyframes slide-in-bottom {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* Reveal - Slide sem mover conteúdo */
+html[class*="reveal-"]::view-transition-old(root) {
+    animation: none;
+}
+
+html[class*="reveal-"]::view-transition-new(root) {
+    animation: reveal-in var(--nw-anim-duration, 600ms) var(--nw-anim-easing, ease-in-out);
+}
+
+html.reveal-left::view-transition-new(root) {
+    --nw-reveal-from: inset(0 0 0 100%);
+}
+
+html.reveal-right::view-transition-new(root) {
+    --nw-reveal-from: inset(0 100% 0 0);
+}
+
+html.reveal-top::view-transition-new(root) {
+    --nw-reveal-from: inset(100% 0 0 0);
+}
+
+html.reveal-bottom::view-transition-new(root) {
+    --nw-reveal-from: inset(0 0 100% 0);
+}
+
+@keyframes reveal-in {
+    from {
+        clip-path: var(--nw-reveal-from);
+    }
+
+    to {
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+:root {
+    --nw-anim-duration: 600ms;
+    --nw-anim-easing: ease-in-out;
+    --nightwind-transition-duration: 400ms;
+}
+
+@layer base {
+
+    .nightwind,
+    .nightwind * {
+        transition-property: background-color, border-color, color, fill, stroke, box-shadow !important;
+        transition-duration: var(--nightwind-transition-duration, 400ms) !important;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    .nightwind-no-transition,
+    .nightwind-no-transition * {
+        transition: none !important;
+    }
 }
 
 /* Durante qualquer View Transition, desativamos as transições de CSS individuais do Nightwind */
 ::view-transition-group(root) {
-    animation-duration: 0.5s;
+    animation-duration: 0.7s;
 }
 
-/* Apenas para o efeito ripple, desativamos a animação padrão de fade */
 .ripple-transition::view-transition-old(root),
 .ripple-transition::view-transition-new(root) {
     animation: none;
     mix-blend-mode: normal;
 }
 
-/* Garante que o conteúdo antigo não suma instantaneamente no ripple */
 ::view-transition-old(root) {
     z-index: 1;
 }

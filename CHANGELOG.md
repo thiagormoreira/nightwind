@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.6.2] - 2026-03-07
+
+### Added
+- Animation 'slide' with 4 directions (left, right, top, bottom).
+- `nightwind.configure()` for global configuration (animation, transition, persistence).
+- CSS custom properties `--nw-anim-duration` and `--nw-anim-easing` for fine-grained control.
+
+### Changed
+- `toggle()` now delegates to `enable()` for consistency.
+- Animation engine extracted to internal `_animate()` method.
+
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 ### [2.6.1](https://github.com/thiagormoreira/nightwind/compare/v2.5.5...v2.6.1) (2026-03-07)

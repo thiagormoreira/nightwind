@@ -43,26 +43,105 @@
         ::view-transition-new(root) {
             z-index: 9999;
         }
+
+        .ripple-reverse::view-transition-old(root) {
+            z-index: 9999;
+        }
+
+        .ripple-reverse::view-transition-new(root) {
+            z-index: 1;
+        }
     </style>
 </head>
 
 <body class="bg-white text-gray-900 min-h-screen p-8">
     <div id="api-status" class="fixed bottom-4 left-4 text-xs opacity-50"></div>
 
-    <!-- Botão de Toggle -->
-    <div class="fixed top-4 right-4 z-50 flex flex-col items-end gap-3">
-        <button id="toggle-default"
-            class="bg-gray-800 text-white dark:bg-indigo-100 dark:text-indigo-900 border-2 border-transparent px-5 py-2.5 rounded-full shadow-xl font-bold transition-all hover:scale-105 active:scale-95 text-sm">
-            Toggle (View Transition Fade)
-        </button>
-        <button id="toggle-ripple"
-            class="bg-indigo-600 text-white px-5 py-2.5 rounded-full shadow-xl font-bold transition-all hover:scale-105 active:scale-95 text-sm ring-4 ring-indigo-200 dark:ring-indigo-900">
-            Toggle (Ripple Effect)
-        </button>
-        <button id="toggle-none"
-            class="bg-gray-400 text-white px-5 py-2.5 rounded-full shadow-xl font-bold transition-all hover:text-gray-100 active:scale-95 text-sm">
-            Toggle (Standard CSS)
-        </button>
+    <!-- Painel de Configuração -->
+    <div class="fixed top-4 right-4 z-50 flex flex-col items-end gap-2 max-w-sm">
+        <div
+            class="bg-white/90 dark:bg-gray-950/90 backdrop-blur-xl p-5 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col gap-4 w-72 transition-all">
+            <div>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-500 dark:text-indigo-400 mb-3">
+                    Configuração Global</p>
+
+                <div class="space-y-3">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-medium text-gray-400">Animação Padrão</label>
+                            <select id="config-anim-default"
+                                class="w-full bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-900 outline-none focus:ring-2 focus:ring-indigo-500/20">
+                                <option value="fade">Fade</option>
+                                <option value="slide">Slide</option>
+                                <option value="reveal">Reveal</option>
+                                <option value="ripple">Ripple</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-medium text-gray-400">Velocidade (Easing)</label>
+                            <select id="config-anim-easing"
+                                class="w-full bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-900 outline-none focus:ring-2 focus:ring-indigo-500/20">
+                                <option value="cubic-bezier(0.7, 0, 0.3, 1)">Exponential</option>
+                                <option value="ease-in-out">Ease In Out</option>
+                                <option value="linear">Linear</option>
+                                <option value="ease-in">Ease In</option>
+                                <option value="ease-out">Ease Out</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-medium text-gray-400">Duração (ms)</label>
+                            <input type="number" id="config-anim-duration" value="600" step="50"
+                                class="w-full bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-900 outline-none focus:ring-2 focus:ring-indigo-500/20">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-medium text-gray-400">Slide Dir</label>
+                            <select id="config-slide-direction"
+                                class="w-full bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-900 outline-none focus:ring-2 focus:ring-indigo-500/20">
+                                <option value="left">Left</option>
+                                <option value="right">Right</option>
+                                <option value="top">Top</option>
+                                <option value="bottom">Bottom</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Transition Settings -->
+                    <div class="pt-2 border-t border-gray-100 dark:border-gray-900 space-y-3">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-medium text-gray-400">Transição CSS (ms)</label>
+                            <input type="number" id="config-trans-duration" value="400" step="50"
+                                class="w-full bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-900 outline-none focus:ring-2 focus:ring-indigo-500/20">
+                        </div>
+                        <div class="flex items-center justify-between py-1">
+                            <label class="text-[10px] font-medium text-gray-400">Persistência</label>
+                            <input type="checkbox" id="config-persistence" checked
+                                class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500/20">
+                        </div>
+                        <div class="flex items-center justify-between py-1">
+                            <label class="text-[10px] font-medium text-gray-400">Animação Reversa</label>
+                            <input type="checkbox" id="config-reverse"
+                                class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500/20">
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="pt-3 border-t border-gray-100 dark:border-gray-900 space-y-2">
+                        <button id="main-toggle"
+                            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white p-2.5 rounded-xl font-bold text-xs transition-all shadow-lg shadow-indigo-500/20 active:scale-95">
+                            Toggle Principal
+                        </button>
+                        <button id="ripple-toggle"
+                            class="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 p-2.5 rounded-xl font-bold text-xs transition-all hover:bg-gray-50 dark:hover:bg-gray-800 active:scale-95">
+                            Forçar Ripple (Event)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <header class="mb-12 text-center">
@@ -195,71 +274,187 @@
     </footer>
 
     <script type="module">
-        // Importação simulada do helper para a demo estática
+        const DEFAULT_CONFIG = {
+            animation: {
+                default: 'fade',
+                duration: 600,
+                easing: 'cubic-bezier(0.7, 0, 0.3, 1)',
+                reverse: false,
+                slide: { direction: 'left' },
+            },
+            transition: {
+                duration: 400,
+                easing: 'ease-in-out',
+            },
+            persistence: true,
+            storageKey: 'nightwind-mode',
+        }
+
+        let _config = { ...DEFAULT_CONFIG }
+
+        function deepMerge(base, override) {
+            const result = { ...base }
+            for (const key of Object.keys(override)) {
+                if (override[key] !== null && typeof override[key] === 'object' && !Array.isArray(override[key])) {
+                    result[key] = deepMerge(base[key] ?? {}, override[key])
+                } else {
+                    result[key] = override[key]
+                }
+            }
+            return result
+        }
+
         const nightwind = {
+            configure: (userConfig = {}) => {
+                _config = deepMerge(DEFAULT_CONFIG, userConfig)
+                const root = document.documentElement
+                root.style.setProperty('--nw-anim-duration', `${_config.animation.duration}ms`)
+                root.style.setProperty('--nw-anim-easing', _config.animation.easing)
+                root.style.setProperty('--nightwind-transition-duration', `${_config.transition.duration}ms`)
+            },
+
             beforeTransition: () => {
                 const doc = document.documentElement
-                doc.classList.add("nightwind")
-                setTimeout(() => doc.classList.remove("nightwind"), 320)
+                doc.classList.add('nightwind')
+                const duration = parseFloat(getComputedStyle(doc).getPropertyValue('--nightwind-transition-duration')) || 400
+                setTimeout(() => doc.classList.remove('nightwind'), duration + 20)
             },
-            toggle: (options = {}) => {
-                const { animation = 'fade', event = null } = options
-                const doc = document.documentElement
 
-                // Função pura — SEM lógica de transição aqui dentro
+            toggle: (options = {}) => {
+                const isDark = document.documentElement.classList.contains('dark')
+                nightwind.enable(!isDark, options)
+            },
+
+            enable: (dark, options = {}) => {
                 const applyChange = () => {
-                    const isDark = doc.classList.toggle("dark")
-                    doc.classList.toggle("light", !isDark)
-                    window.localStorage.setItem('nightwind-mode', isDark ? 'dark' : 'light');
+                    const doc = document.documentElement
+                    doc.classList.toggle('dark', dark)
+                    doc.classList.toggle('light', !dark)
+                    if (_config.persistence) {
+                        localStorage.setItem(_config.storageKey, dark ? 'dark' : 'light')
+                    }
+                }
+                nightwind._animate(applyChange, options, dark)
+            },
+
+            _animate: (applyChange, options = {}, dark = true) => {
+                const doc = document.documentElement
+                const animation = options.animation ?? _config.animation.default
+                const duration = options.duration ?? _config.animation.duration
+                const easing = options.easing ?? _config.animation.easing
+                const reverse = options.reverse ?? _config.animation.reverse
+                const event = options.event ?? null
+
+                const getDirection = () => {
+                    const dir = options.direction ?? _config.animation.slide.direction
+                    if (!reverse || dark) return dir
+                    const opposites = { left: 'right', right: 'left', top: 'bottom', bottom: 'top' }
+                    return opposites[dir] || dir
                 }
 
-                // Fallback: sem View Transitions ou animação desativada
                 if (!document.startViewTransition || animation === 'none') {
                     nightwind.beforeTransition()
                     applyChange()
                     return
                 }
 
-                // Ripple
-                if (animation === 'ripple' && event) {
+                if (animation === 'fade') {
+                    document.startViewTransition(applyChange)
+                    return
+                }
+
+                if (animation === 'slide') {
+                    const direction = getDirection()
+                    const cls = `slide-${direction}`
+                    doc.style.setProperty('--nw-anim-duration', `${duration}ms`)
+                    doc.style.setProperty('--nw-anim-easing', easing)
+                    doc.classList.add(cls)
+                    const transition = document.startViewTransition(applyChange)
+                    transition.finished.finally(() => doc.classList.remove(cls))
+                    return
+                }
+
+                if (animation === 'reveal') {
+                    const direction = getDirection()
+                    const cls = `reveal-${direction}`
+                    doc.style.setProperty('--nw-anim-duration', `${duration}ms`)
+                    doc.style.setProperty('--nw-anim-easing', easing)
+                    doc.classList.add(cls)
+                    const transition = document.startViewTransition(applyChange)
+                    transition.finished.finally(() => doc.classList.remove(cls))
+                    return
+                }
+
+                if (animation === 'ripple') {
+                    if (!event) {
+                        document.startViewTransition(applyChange)
+                        return
+                    }
                     const { clientX: x, clientY: y } = event
+                    const isExpand = reverse ? dark : true
+
                     doc.classList.add('ripple-transition')
+                    if (!isExpand) doc.classList.add('ripple-reverse')
 
                     const transition = document.startViewTransition(applyChange)
-
                     transition.finished.finally(() => {
                         doc.classList.remove('ripple-transition')
+                        doc.classList.remove('ripple-reverse')
                     })
-
                     transition.ready.then(() => {
-                        const radius = Math.hypot(
-                            Math.max(x, window.innerWidth - x),
-                            Math.max(y, window.innerHeight - y)
-                        )
+                        const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))
+                        const fromCircle = `circle(0px at ${x}px ${y}px)`
+                        const toCircle = `circle(${radius}px at ${x}px ${y}px)`
+
                         doc.animate(
+                            { clipPath: isExpand ? [fromCircle, toCircle] : [toCircle, fromCircle] },
                             {
-                                clipPath: [
-                                    `circle(0px at ${x}px ${y}px)`,
-                                    `circle(${radius}px at ${x}px ${y}px)`
-                                ]
-                            },
-                            {
-                                duration: 700,
-                                easing: 'ease-in-out',
-                                pseudoElement: '::view-transition-new(root)'
+                                duration,
+                                easing,
+                                fill: 'forwards',
+                                pseudoElement: isExpand ? '::view-transition-new(root)' : '::view-transition-old(root)'
                             }
                         )
                     })
                     return
                 }
-
-                document.startViewTransition(applyChange)
             }
         };
 
-        document.getElementById('toggle-default').addEventListener('click', () => nightwind.toggle({ animation: 'fade' }));
-        document.getElementById('toggle-ripple').addEventListener('click', (e) => nightwind.toggle({ animation: 'ripple', event: e }));
-        document.getElementById('toggle-none').addEventListener('click', () => nightwind.toggle({ animation: 'none' }));
+        // Sincronização da UI com nightwind.configure
+        function updateConfig() {
+            nightwind.configure({
+                animation: {
+                    default: document.getElementById('config-anim-default').value,
+                    duration: parseInt(document.getElementById('config-anim-duration').value),
+                    easing: document.getElementById('config-anim-easing').value,
+                    reverse: document.getElementById('config-reverse').checked,
+                    slide: { direction: document.getElementById('config-slide-direction').value }
+                },
+                transition: {
+                    duration: parseInt(document.getElementById('config-trans-duration').value)
+                },
+                persistence: document.getElementById('config-persistence').checked
+            });
+        }
+
+        // Listeners para mudanças nos inputs
+        ['config-anim-default', 'config-anim-easing', 'config-anim-duration', 'config-slide-direction', 'config-trans-duration', 'config-persistence', 'config-reverse'].forEach(id => {
+            document.getElementById(id).addEventListener('change', updateConfig);
+        });
+
+        // Toggle Principal (Usa animação padrão configurada)
+        document.getElementById('main-toggle').addEventListener('click', () => {
+            nightwind.toggle();
+        });
+
+        // Forçar Ripple passando evento
+        document.getElementById('ripple-toggle').addEventListener('click', (e) => {
+            nightwind.toggle({ animation: 'ripple', event: e });
+        });
+
+        // Inicializar com config atual dos inputs
+        updateConfig();
 
         const status = document.getElementById('api-status');
         if (document.startViewTransition) {
@@ -270,6 +465,7 @@
             status.classList.add("text-red-600");
         }
     </script>
+
 </body>
 
 </html>
