@@ -11,7 +11,7 @@ const processColor = (value, shouldInvert = true) => {
   const lowTrimmed = trimmed.toLowerCase()
 
   if (lowTrimmed.includes("oklch")) {
-    if (lowTrimmed.includes("none")) return trimmed
+    if (lowTrimmed.includes("none") || !shouldInvert) return trimmed
     const parts = trimmed.match(/[\d.%]+/g)
     if (!parts || parts.length < 3) return value
     let l = parts[0]
@@ -19,12 +19,10 @@ const processColor = (value, shouldInvert = true) => {
     let isPercent = l.endsWith("%")
 
     // Normalize lVal based on percentage or range
-    if (shouldInvert) {
-      lVal = parseFloat(isPercent
-        ? (100 - lVal).toFixed(1)
-        : (1 - lVal).toFixed(3)
-      )
-    }
+    lVal = parseFloat(isPercent
+      ? (100 - lVal).toFixed(1)
+      : (1 - lVal).toFixed(3)
+    )
 
     let res = `oklch(${lVal}${isPercent ? "%" : ""} ${parts[1]} ${parts[2]}`
     if (parts[3]) res += ` / ${parts[3]}`
@@ -32,16 +30,20 @@ const processColor = (value, shouldInvert = true) => {
     return res
   }
 
-  const hslMatch = trimmed.match(/hsla?\(([\d.]+)[,\s]+([\d.]+)%[,\s]+([\d.]+)%(?:[,\s\/]+([\d.%]+))?\s*\)/)
+  const hslMatch = trimmed.match(/hsla?\(([\d.]+(?:deg|grad|rad|turn)?)[,\s]+([\d.]+)%[,\s]+([\d.]+)%(?:[,\s\/]+([\d.%]+))?\s*\)/)
   if (hslMatch) {
+    if (!shouldInvert) return trimmed
     let h = hslMatch[1]
     let l = parseFloat(hslMatch[3])
-    if (shouldInvert) {
-      l = parseFloat((100 - l).toFixed(1))
-    }
+    l = parseFloat((100 - l).toFixed(1))
     const s = hslMatch[2]
-    const alpha = hslMatch[4]
-    return alpha
+    let alpha = hslMatch[4]
+    if (alpha) {
+      alpha = alpha.endsWith("%")
+        ? parseFloat((parseFloat(alpha) / 100).toFixed(3))
+        : parseFloat(alpha)
+    }
+    return alpha !== undefined
       ? `hsl(${h} ${s}% ${l}% / ${alpha})`
       : `hsl(${h} ${s}% ${l}%)`
   }
@@ -130,13 +132,16 @@ const nightwind = plugin(
     const colors = theme("colors") || {}
     const nightwindClasses = {}
     const manualOverrides = {}
-    const themeColorValues = {}
 
     const getGradientValue0 = (val) => {
       if (!val) return val
-      return /\//.test(val)
-        ? val.replace(/\/[\s\d.%]+\)$/, "/ 0)")
-        : val.replace(/\)$/, " / 0)")
+      // Normalize legacy syntax (commas) to modern syntax (spaces) before adding alpha
+      const normalized = val.replace(/^(hsla?\()([^)]+)\)$/, (_, fn, args) => {
+        return fn + args.replace(/,\s*/g, " ") + ")"
+      })
+      return /\//.test(normalized)
+        ? normalized.replace(/\/[\s\d.%]+\)$/, "/ 0)")
+        : normalized.replace(/\)$/, " / 0)")
     }
 
     Object.entries(colors).forEach(([colorName, colorValue]) => {
@@ -147,7 +152,6 @@ const nightwind = plugin(
         const colorPath = isStandard ? `${colorName}.${weight}` : colorName
         const resolvedValue = theme(`colors.${colorPath}`)
         if (typeof resolvedValue !== "string") return
-        themeColorValues[resolvedValue.toLowerCase()] = true
 
         let invertedValue = resolvedValue
         let shouldInvertColor = true
