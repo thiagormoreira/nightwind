@@ -131,6 +131,7 @@ const nightwind = plugin(
 
     const colors = theme("colors") || {}
     const nightwindClasses = {}
+    if (darkSelector.startsWith("@media")) nightwindClasses[darkSelector] = {}
     const manualOverrides = {}
 
     const getGradientValue0 = (val) => {
@@ -181,7 +182,6 @@ const nightwind = plugin(
             const selector = baseSelector + sfx
 
             if (darkSelector.startsWith("@media")) {
-              nightwindClasses[darkSelector] = nightwindClasses[darkSelector] || {}
               nightwindClasses[darkSelector][selector] = { [prop]: inverted + importantSuffix }
             } else {
               nightwindClasses[`${darkSelector} ${selector}`] = { [prop]: inverted + importantSuffix }
@@ -202,7 +202,6 @@ const nightwind = plugin(
           extras.forEach(({ s }) => {
             const fullS = s + sfx
             if (darkSelector.startsWith("@media")) {
-              nightwindClasses[darkSelector] = nightwindClasses[darkSelector] || {}
               nightwindClasses[darkSelector][fullS] = { [prop]: inverted + importantSuffix }
             } else {
               nightwindClasses[`${darkSelector} ${fullS}`] = { [prop]: inverted + importantSuffix }
@@ -248,7 +247,6 @@ const nightwind = plugin(
           variantsList.forEach(v => {
             const baseSelector = v === "" ? `.${escapedBase}` : `.${v}\\:${escapedBase}:${v}`
             if (darkSelector.startsWith("@media")) {
-              nightwindClasses[darkSelector] = nightwindClasses[darkSelector] || {}
               nightwindClasses[darkSelector][baseSelector] = styles
             } else {
               nightwindClasses[`${darkSelector} ${baseSelector}`] = styles

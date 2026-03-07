@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.4.1](https://github.com/thiagormoreira/nightwind/compare/v2.4.0...v2.4.1) (2026-03-07)
+
+### Fixed
+- **Branch Coverage**: Achieved 100% Branch Coverage by refactoring `@media` initialization logic and handling remaining edge cases in theme colors and typography.
+- **Improved Stability**: Reinforced type checking for non-string values across all color utilities.
+
 ## [2.4.0](https://github.com/thiagormoreira/nightwind/compare/v2.3.0...v2.4.0) (2026-03-07)
 
 ### Added

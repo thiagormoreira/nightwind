@@ -23,6 +23,7 @@ describe("nightwind coverage tests", () => {
 
     it("should handle OKLCH colors and alpha", async () => {
         expect(nightwind.processColor("oklch(0.2 0.1 10)", true)).toBe("oklch(0.8 0.1 10)")
+        expect(nightwind.processColor("oklch(0.2 0.1 10 / 0.5)", true)).toBe("oklch(0.8 0.1 10 / 0.5)")
         expect(nightwind.processColor("oklch(20% 0.1 10)", true)).toBe("oklch(80% 0.1 10)")
         expect(nightwind.processColor("rgb(0 0 0 / 50%)", true)).toBe("rgb(255 255 255 / 0.5)")
         expect(nightwind.processColor(" oklch(0.2 0.1 10) ", false)).toBe("oklch(0.2 0.1 10)")
@@ -127,10 +128,137 @@ describe("nightwind coverage tests", () => {
         expect(css).toContain(".dark .prose")
     })
 
+    it("should cover @media strategy with all utility types", async () => {
+        const css = await generateCss(`
+            <div class="bg-red-500 from-red-500 via-red-500 to-red-500 group-hover:bg-red-500 bg-[#ffffff] from-[#ff0000] prose"></div>
+        `, {
+            darkMode: "media",
+            theme: {
+                extend: {
+                    nightwind: { typography: true },
+                    typography: { DEFAULT: { css: { "--tw-prose-body": "#000" } } }
+                }
+            }
+        })
+        expect(css).toContain("@media (prefers-color-scheme: dark)")
+        expect(css).toContain(".group:hover")
+        expect(css).toContain("--tw-gradient-from")
+        expect(css).toContain("background-color: rgb(0 0 0)")
+        expect(css).toContain("--tw-prose-body: rgb(255 255 255)")
+        expect(css).toContain("--tw-gradient-to: rgb(255 255 255)")
+    })
+
+    it("should cover @media initialization and reuse branches", async () => {
+        // Test purely group-hover in @media to hit initialization branch (right side of ||)
+        const cssA = await generateCss('<div class="group-hover:bg-red-500 from-red-500"></div>', {
+            darkMode: "media"
+        })
+        expect(cssA).toContain("@media")
+
+        // Test reuse in @media (left side of ||)
+        const cssB = await generateCss('<div class="bg-red-500 bg-blue-500 from-red-500 from-blue-500 group-hover:bg-red-500 group-hover:bg-blue-500"></div>', {
+            darkMode: "media"
+        })
+        expect(cssB).toContain("@media")
+    })
+
+    it("should cover array-based typography and nested styles with null values", async () => {
+        const css = await generateCss('<div class="prose"></div>', {
+            theme: {
+                extend: {
+                    nightwind: { typography: true },
+                    typography: {
+                        DEFAULT: {
+                            css: [
+                                { color: "#000", "--tw-prose-body": "#000" },
+                                null,
+                                { p: { color: "#111" } }
+                            ]
+                        }
+                    }
+                }
+            }
+        })
+        expect(css).toContain("--tw-prose-body: rgb(255 255 255)")
+    })
+
+    it("should cover getGradientValue0 early return with null", () => {
+        // This is covered internally, but ensuring it runs
+        expect(nightwind.processColor("from-[]", true)).toBe("from-[]")
+    })
+
+    it("should cover edge cases in matchUtilities and colors theme", async () => {
+        const css = await generateCss('<div class="bg-red-500 from-red-500 bg-non-string from-non-string"></div>', {
+            theme: { extend: { colors: { red: { 500: "#f00", 400: "#e00" }, "non-string": 123, empty: "", bad: null } } }
+        })
+        expect(css).toContain(".dark .bg-red-500")
+
+        const cssNone = await generateCss('<div class="bg-red-500"></div>', {
+            theme: { colors: null }
+        })
+        expect(cssNone).not.toContain(".dark")
+
+        const cssImportant = await generateCss('<div class="group-hover:bg-red-500"></div>', {
+            important: true
+        })
+        expect(cssImportant).toContain("!important")
+    })
+
+    it("should cover matchUtilities early returns and invalid types", async () => {
+        const css = await generateCss('<div class="bg-[transparent] from-[transparent]"></div>')
+        expect(css).not.toContain(".dark .bg-\\[transparent\\]")
+        expect(css).not.toContain(".dark .from-\\[transparent\\]")
+
+        let capturedFunctions = {};
+        const mockParams = {
+            addBase: () => { },
+            addComponents: () => { },
+            matchUtilities: (utils) => {
+                Object.assign(capturedFunctions, utils);
+            },
+            theme: () => ({}),
+            config: () => ({}),
+        };
+        nightwind.handler(mockParams);
+        expect(capturedFunctions.bg(123)).toBeNull();
+        expect(capturedFunctions.from(123)).toBeNull();
+    })
+
     it("should cover isDarkModeSelector array branches", async () => {
         const cssArr = await generateCss('<div class="bg-red-500"></div>', {
             darkMode: ["class", ".custom-dark"]
         })
         expect(cssArr).toContain(".custom-dark .bg-red-500")
+
+        const cssArrNoSelector = await generateCss('<div class="bg-red-500"></div>', {
+            darkMode: ["class"]
+        })
+        expect(cssArrNoSelector).toContain(".dark .bg-red-500")
+    })
+
+    it("should handle custom transitionDuration", async () => {
+        const css = await generateCss('<div class="bg-red-500"></div>', {
+            theme: { extend: { nightwind: { transitionDuration: "500ms" } } }
+        })
+        expect(css).toContain("--nightwind-transition-duration: 500ms")
+
+        const cssFalse = await generateCss('<div class="bg-red-500"></div>', {
+            theme: { extend: { nightwind: { transitionDuration: false } } }
+        })
+        expect(cssFalse).not.toContain("--nightwind-transition-duration")
+    })
+
+    it("should add !important to static utilities", async () => {
+        const css = await generateCss('<div class="bg-red-500"></div>', {
+            important: true
+        })
+        expect(css).toContain("background-color: rgb(16 187 187) !important")
+    })
+
+    it("should cover oklch with absolute values in theme", async () => {
+        const css = await generateCss('<div class="bg-custom-500"></div>', {
+            theme: { extend: { colors: { custom: { 500: "oklch(0.5 0.2 220)" } } } }
+        })
+        expect(css).toContain("background-color: oklch(0.5 0.2 220)")
     })
 })

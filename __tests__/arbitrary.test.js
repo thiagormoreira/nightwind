@@ -37,4 +37,16 @@ describe("nightwind arbitrary colors", () => {
         expect(css).toContain(".dark .border-\\[\\#00ff00\\]")
         expect(css).toContain("border-color: rgb(255 0 255)")
     })
+
+    it("should invert arbitrary to gradient", async () => {
+        const css = await generateCss('<div class="to-[#ff0000]"></div>')
+        expect(css).toContain(".dark .to-\\[\\#ff0000\\]")
+        expect(css).toContain("--tw-gradient-to: rgb(0 255 255)")
+    })
+
+    it("should invert arbitrary from/via gradient", async () => {
+        const css = await generateCss('<div class="from-[#ff0000] via-[#00ff00]"></div>')
+        expect(css).toContain("--tw-gradient-from: rgb(0 255 255)")
+        expect(css).toContain("--tw-gradient-stops: var(--tw-gradient-from), rgb(255 0 255), var(--tw-gradient-to, rgb(255 0 255 / 0))")
+    })
 })
