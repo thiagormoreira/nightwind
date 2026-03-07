@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.6.0](https://github.com/thiagormoreira/nightwind/compare/v2.5.5...v2.6.0) (2026-03-07)
+
+### Changed
+- **Semantic Color Inversion**: Colors are now inverted by lightness (HSL) instead of full spectrum (RGB), preserving hue and saturation. A red alert stays red in dark mode — just darker. Legacy behavior available via `invertMode: 'spectrum'` config option.
+
 ### [2.5.5](https://github.com/thiagormoreira/nightwind/compare/v2.5.4...v2.5.5) (2026-03-07)
 
 ### [2.5.4](https://github.com/thiagormoreira/nightwind/compare/v2.5.3...v2.5.4) (2026-03-07)

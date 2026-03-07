@@ -25,7 +25,7 @@ describe("nightwind coverage tests", () => {
         expect(nightwind.processColor("oklch(0.2 0.1 10)", true)).toBe("oklch(0.8 0.1 10)")
         expect(nightwind.processColor("oklch(0.2 0.1 10 / 0.5)", true)).toBe("oklch(0.8 0.1 10 / 0.5)")
         expect(nightwind.processColor("oklch(20% 0.1 10)", true)).toBe("oklch(80% 0.1 10)")
-        expect(nightwind.processColor("rgb(0 0 0 / 50%)", true)).toBe("rgb(255 255 255 / 0.5)")
+        expect(nightwind.processColor("rgb(0 0 0 / 50%)", true)).toBe("hsl(0 0% 100% / 0.5)")
         expect(nightwind.processColor(" oklch(0.2 0.1 10) ", false)).toBe("oklch(0.2 0.1 10)")
         expect(nightwind.processColor("oklch(20% 0.1 10)", false)).toBe("oklch(20% 0.1 10)")
     })
@@ -46,9 +46,9 @@ describe("nightwind coverage tests", () => {
     })
 
     it("should handle all hex lengths and normalize alpha", async () => {
-        expect(nightwind.processColor("#fff", true)).toBe("rgb(0 0 0)")
-        expect(nightwind.processColor("#0000", true)).toBe("rgb(255 255 255 / 0)")
-        expect(nightwind.processColor("#00000000", true)).toBe("rgb(255 255 255 / 0)")
+        expect(nightwind.processColor("#fff", true)).toBe("hsl(0 0% 0%)")
+        expect(nightwind.processColor("#0000", true)).toBe("hsl(0 0% 100% / 0)")
+        expect(nightwind.processColor("#00000000", true)).toBe("hsl(0 0% 100% / 0)")
         expect(nightwind.processColor("#ff0000", false)).toBe("rgb(255 0 0)")
     })
 
@@ -64,8 +64,8 @@ describe("nightwind coverage tests", () => {
         const css = await generateCss(`
             <div class="from-[rgba(0,0,0,0.5)] via-[#ff0000]"></div>
         `)
-        expect(css).toContain("--tw-gradient-from: rgb(255 255 255 / 0.5)")
-        expect(css).toContain("var(--tw-gradient-to, rgb(255 0 0 / 0))")
+        expect(css).toContain("--tw-gradient-from: hsl(0 0% 100% / 0.5)")
+        expect(css).toContain("var(--tw-gradient-to, hsl(0 100% 50% / 0))")
     })
 
     it("should handle gradients correctly including JIT and manual overrides", async () => {
@@ -88,7 +88,7 @@ describe("nightwind coverage tests", () => {
     it("should be v4 compliant in generated rules", async () => {
         const css = await generateCss('<div class="bg-red-500"></div>')
         expect(css).toContain(".dark .bg-red-500")
-        expect(css).toContain("background-color: rgb(16 187 187)")
+        expect(css).toContain("background-color: rgb(239 68 68)")
     })
 
     it("should cover matchUtilities return null and arbitrary values matching theme", async () => {
@@ -143,9 +143,9 @@ describe("nightwind coverage tests", () => {
         expect(css).toContain("@media (prefers-color-scheme: dark)")
         expect(css).toContain(".group:hover")
         expect(css).toContain("--tw-gradient-from")
-        expect(css).toContain("background-color: rgb(0 0 0)")
-        expect(css).toContain("--tw-prose-body: rgb(255 255 255)")
-        expect(css).toContain("--tw-gradient-to: rgb(255 255 255)")
+        expect(css).toContain("background-color: hsl(0 0% 0%)")
+        expect(css).toContain("--tw-prose-body: hsl(0 0% 100%)")
+        expect(css).toContain("--tw-gradient-to: hsl(0 0% 100%)")
     })
 
     it("should cover @media initialization and reuse branches", async () => {
@@ -179,7 +179,7 @@ describe("nightwind coverage tests", () => {
                 }
             }
         })
-        expect(css).toContain("--tw-prose-body: rgb(255 255 255)")
+        expect(css).toContain("--tw-prose-body: hsl(0 0% 100%)")
     })
 
     it("should cover getGradientValue0 early return with null", () => {
@@ -252,7 +252,7 @@ describe("nightwind coverage tests", () => {
         const css = await generateCss('<div class="bg-red-500"></div>', {
             important: true
         })
-        expect(css).toContain("background-color: rgb(16 187 187) !important")
+        expect(css).toContain("background-color: rgb(239 68 68) !important")
     })
 
     it("should cover oklch with absolute values in theme", async () => {

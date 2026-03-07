@@ -1,9 +1,30 @@
 const plugin = require("tailwindcss/plugin")
 
+function rgbToHsl(r, g, b) {
+  r /= 255; g /= 255; b /= 255
+  const max = Math.max(r, g, b), min = Math.min(r, g, b)
+  let h = 0, s = 0
+  const l = (max + min) / 2
+  if (max !== min) {
+    const d = max - min
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
+    switch (max) {
+      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break
+      case g: h = ((b - r) / d + 2) / 6; break
+      case b: h = ((r - g) / d + 4) / 6; break
+    }
+  }
+  return [
+    Math.round(h * 360),
+    parseFloat((s * 100).toFixed(1)),
+    parseFloat((l * 100).toFixed(1))
+  ]
+}
+
 /**
  * Parses a color string (Hex, RGB, RGBA, OKLCH, HSL, HSLA) and optionally inverts it.
  */
-const processColor = (value, shouldInvert = true) => {
+const processColor = (value, shouldInvert = true, invertMode = "lightness") => {
   if (!value || typeof value !== "string") return value
   const trimmed = value.trim()
   if (trimmed.includes("var(")) return value
@@ -80,9 +101,17 @@ const processColor = (value, shouldInvert = true) => {
   }
 
   if (shouldInvert) {
-    r = 255 - r
-    g = 255 - g
-    b = 255 - b
+    if (invertMode === "spectrum") {
+      r = 255 - r
+      g = 255 - g
+      b = 255 - b
+    } else {
+      const [h, s, l] = rgbToHsl(r, g, b)
+      const invertedL = parseFloat((100 - l).toFixed(1))
+      return a !== 1
+        ? `hsl(${h} ${s}% ${invertedL}% / ${a})`
+        : `hsl(${h} ${s}% ${invertedL}%)`
+    }
   }
   return a === 1 ? `rgb(${r} ${g} ${b})` : `rgb(${r} ${g} ${b} / ${a})`
 }
@@ -96,6 +125,7 @@ const nightwind = plugin(
     const fixedElementClass = theme("nightwind.fixedClass", "nightwind-prevent")
     const fixedBlockClass = theme("nightwind.fixedBlockClass", "nightwind-prevent-block")
     const transitionDurationValue = theme("nightwind.transitionDuration") === false ? false : (theme("nightwind.transitionDuration") || "400ms")
+    const invertMode = theme("nightwind.invertMode", "lightness")
 
     if (transitionDurationValue !== false && transitionDurationValue !== "false") {
       addBase({ ":root": { "--nightwind-transition-duration": transitionDurationValue } })
@@ -168,8 +198,8 @@ const nightwind = plugin(
             }
           }
         }
-        const inverted = processColor(invertedValue, shouldInvertColor)
-        const fixedValue = processColor(resolvedValue, false)
+        const inverted = processColor(invertedValue, shouldInvertColor, invertMode)
+        const fixedValue = processColor(resolvedValue, false, invertMode)
 
         // Standard Utilities
         Object.entries(colorUtilities).forEach(([prefix, { prop, suffix }]) => {
@@ -213,7 +243,7 @@ const nightwind = plugin(
         // Gradients
         const gPrefixes = ["from", "via", "to"]
         const gradientValue0 = getGradientValue0(inverted)
-        const res = processColor(resolvedValue, false)
+        const res = processColor(resolvedValue, false, invertMode)
         const res0 = getGradientValue0(res)
 
         gPrefixes.forEach(prefix => {
@@ -272,7 +302,7 @@ const nightwind = plugin(
         {
           [prefix]: (value) => {
             if (typeof value !== "string") return null
-            const invertedValue = processColor(value, true)
+            const invertedValue = processColor(value, true, invertMode)
             if (invertedValue === value) return null
             const styles = {}
             const sfx = suffix || ""
@@ -304,14 +334,14 @@ const nightwind = plugin(
         {
           [prefix]: (value) => {
             if (typeof value !== "string") return null
-            const inv = processColor(value, true)
+            const inv = processColor(value, true, invertMode)
             if (inv === value) return null
             const inv0 = getGradientValue0(inv)
             const styles = {}
             if (darkSelector.startsWith("@media")) styles[darkSelector] = { "&": buildStyles(inv, inv0) }
             else styles[`${darkSelector} &`] = buildStyles(inv, inv0)
 
-            const resVal = processColor(value, false)
+            const resVal = processColor(value, false, invertMode)
             const resVal0 = getGradientValue0(resVal)
             styles[`&.${fixedElementClass}, .${fixedBlockClass} &`] = buildStyles(resVal, resVal0)
 
@@ -331,7 +361,7 @@ const nightwind = plugin(
           if (typeof val === "string") {
             const t = val.trim().toLowerCase()
             if (t.startsWith("#") || t.startsWith("rgb") || t.includes("oklch") || t.includes("hsl")) {
-              if (key.startsWith("--tw-prose-")) darkTypographyVars[key] = processColor(val, true)
+              if (key.startsWith("--tw-prose-")) darkTypographyVars[key] = processColor(val, true, invertMode)
             }
           } else if (val && typeof val === "object") extractColors(val)
         })
