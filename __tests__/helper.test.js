@@ -174,7 +174,7 @@ describe("nightwind/helper", () => {
       expect(document.documentElement.classList.contains("blur")).toBe(true)
     })
 
-    it("should apply generic animation class (zoom)", () => {
+    it("should apply generic animation class (zoom) with reverse", () => {
       // Simulate dark being true initially, then toggle to false
       document.documentElement.classList.add("dark")
       helper.toggle({ animation: "zoom", reverse: true })
