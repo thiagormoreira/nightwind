@@ -21,34 +21,38 @@
         .nightwind,
         .nightwind * {
             transition-duration: 300ms;
-            transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+            transition-property: background-color, border-color, color, fill, stroke,
+                opacity, box-shadow, transform, filter, backdrop-filter;
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* View Transition Styles */
-        ::view-transition-group(root) {
-            animation-duration: 0.7s;
+        /* Remove o stacking context isolado para que z-index funcione */
+        ::view-transition-image-pair(root) {
+            isolation: auto;
         }
 
-        .ripple-transition::view-transition-old(root),
-        .ripple-transition::view-transition-new(root) {
+        /* Ripple: desabilita animações CSS — a animação é feita via Web Animations API */
+        html.ripple-transition::view-transition-old(root),
+        html.ripple-transition::view-transition-new(root) {
             animation: none;
             mix-blend-mode: normal;
         }
 
-        ::view-transition-old(root) {
+        /* Expand: new fica na frente, clip-path anima de circle(0) para circle(150%) */
+        html.ripple-transition::view-transition-old(root) {
             z-index: 1;
         }
 
-        ::view-transition-new(root) {
+        html.ripple-transition::view-transition-new(root) {
             z-index: 9999;
         }
 
-        .ripple-reverse::view-transition-old(root) {
+        /* Contract (reverse): old fica na frente, clip-path anima de circle(150%) para circle(0) */
+        html.ripple-transition.ripple-reverse::view-transition-old(root) {
             z-index: 9999;
         }
 
-        .ripple-reverse::view-transition-new(root) {
+        html.ripple-transition.ripple-reverse::view-transition-new(root) {
             z-index: 1;
         }
     </style>
@@ -75,6 +79,14 @@
                                 <option value="slide">Slide</option>
                                 <option value="reveal">Reveal</option>
                                 <option value="ripple">Ripple</option>
+                                <option value="zoom">Zoom</option>
+                                <option value="flip">Flip</option>
+                                <option value="rotate">Rotate</option>
+                                <option value="wipe">Wipe</option>
+                                <option value="iris">Iris</option>
+                                <option value="blur">Blur</option>
+                                <option value="dissolve">Dissolve</option>
+                                <option value="corner-wipe">Corner Wipe</option>
                                 <option value="none">None</option>
                             </select>
                         </div>
@@ -273,155 +285,23 @@
         Nightwind Demo &copy; 2026
     </footer>
 
-    <script type="module">
-        const DEFAULT_CONFIG = {
+    <script src="./nightwind-browser.js"></script>
+    <script>
+        // Inicialização
+        nightwind.configure({
             animation: {
-                default: 'fade',
-                duration: 600,
-                easing: 'cubic-bezier(0.7, 0, 0.3, 1)',
-                reverse: false,
-                slide: { direction: 'left' },
+                default: document.getElementById('config-anim-default').value,
+                duration: parseInt(document.getElementById('config-anim-duration').value),
+                easing: document.getElementById('config-anim-easing').value,
+                reverse: document.getElementById('config-reverse').checked,
+                slide: { direction: document.getElementById('config-slide-direction').value },
             },
             transition: {
-                duration: 400,
-                easing: 'ease-in-out',
+                duration: parseInt(document.getElementById('config-trans-duration').value),
             },
-            persistence: true,
-            storageKey: 'nightwind-mode',
-        }
+            persistence: document.getElementById('config-persistence').checked,
+        })
 
-        let _config = { ...DEFAULT_CONFIG }
-
-        function deepMerge(base, override) {
-            const result = { ...base }
-            for (const key of Object.keys(override)) {
-                if (override[key] !== null && typeof override[key] === 'object' && !Array.isArray(override[key])) {
-                    result[key] = deepMerge(base[key] ?? {}, override[key])
-                } else {
-                    result[key] = override[key]
-                }
-            }
-            return result
-        }
-
-        const nightwind = {
-            configure: (userConfig = {}) => {
-                _config = deepMerge(DEFAULT_CONFIG, userConfig)
-                const root = document.documentElement
-                root.style.setProperty('--nw-anim-duration', `${_config.animation.duration}ms`)
-                root.style.setProperty('--nw-anim-easing', _config.animation.easing)
-                root.style.setProperty('--nightwind-transition-duration', `${_config.transition.duration}ms`)
-            },
-
-            beforeTransition: () => {
-                const doc = document.documentElement
-                doc.classList.add('nightwind')
-                const duration = parseFloat(getComputedStyle(doc).getPropertyValue('--nightwind-transition-duration')) || 400
-                setTimeout(() => doc.classList.remove('nightwind'), duration + 20)
-            },
-
-            toggle: (options = {}) => {
-                const isDark = document.documentElement.classList.contains('dark')
-                nightwind.enable(!isDark, options)
-            },
-
-            enable: (dark, options = {}) => {
-                const applyChange = () => {
-                    const doc = document.documentElement
-                    doc.classList.toggle('dark', dark)
-                    doc.classList.toggle('light', !dark)
-                    if (_config.persistence) {
-                        localStorage.setItem(_config.storageKey, dark ? 'dark' : 'light')
-                    }
-                }
-                nightwind._animate(applyChange, options, dark)
-            },
-
-            _animate: (applyChange, options = {}, dark = true) => {
-                const doc = document.documentElement
-                const animation = options.animation ?? _config.animation.default
-                const duration = options.duration ?? _config.animation.duration
-                const easing = options.easing ?? _config.animation.easing
-                const reverse = options.reverse ?? _config.animation.reverse
-                const event = options.event ?? null
-
-                const getDirection = () => {
-                    const dir = options.direction ?? _config.animation.slide.direction
-                    if (!reverse || dark) return dir
-                    const opposites = { left: 'right', right: 'left', top: 'bottom', bottom: 'top' }
-                    return opposites[dir] || dir
-                }
-
-                if (!document.startViewTransition || animation === 'none') {
-                    nightwind.beforeTransition()
-                    applyChange()
-                    return
-                }
-
-                if (animation === 'fade') {
-                    document.startViewTransition(applyChange)
-                    return
-                }
-
-                if (animation === 'slide') {
-                    const direction = getDirection()
-                    const cls = `slide-${direction}`
-                    doc.style.setProperty('--nw-anim-duration', `${duration}ms`)
-                    doc.style.setProperty('--nw-anim-easing', easing)
-                    doc.classList.add(cls)
-                    const transition = document.startViewTransition(applyChange)
-                    transition.finished.finally(() => doc.classList.remove(cls))
-                    return
-                }
-
-                if (animation === 'reveal') {
-                    const direction = getDirection()
-                    const cls = `reveal-${direction}`
-                    doc.style.setProperty('--nw-anim-duration', `${duration}ms`)
-                    doc.style.setProperty('--nw-anim-easing', easing)
-                    doc.classList.add(cls)
-                    const transition = document.startViewTransition(applyChange)
-                    transition.finished.finally(() => doc.classList.remove(cls))
-                    return
-                }
-
-                if (animation === 'ripple') {
-                    if (!event) {
-                        document.startViewTransition(applyChange)
-                        return
-                    }
-                    const { clientX: x, clientY: y } = event
-                    const isExpand = reverse ? dark : true
-
-                    doc.classList.add('ripple-transition')
-                    if (!isExpand) doc.classList.add('ripple-reverse')
-
-                    const transition = document.startViewTransition(applyChange)
-                    transition.finished.finally(() => {
-                        doc.classList.remove('ripple-transition')
-                        doc.classList.remove('ripple-reverse')
-                    })
-                    transition.ready.then(() => {
-                        const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))
-                        const fromCircle = `circle(0px at ${x}px ${y}px)`
-                        const toCircle = `circle(${radius}px at ${x}px ${y}px)`
-
-                        doc.animate(
-                            { clipPath: isExpand ? [fromCircle, toCircle] : [toCircle, fromCircle] },
-                            {
-                                duration,
-                                easing,
-                                fill: 'forwards',
-                                pseudoElement: isExpand ? '::view-transition-new(root)' : '::view-transition-old(root)'
-                            }
-                        )
-                    })
-                    return
-                }
-            }
-        };
-
-        // Sincronização da UI com nightwind.configure
         function updateConfig() {
             nightwind.configure({
                 animation: {
@@ -429,40 +309,39 @@
                     duration: parseInt(document.getElementById('config-anim-duration').value),
                     easing: document.getElementById('config-anim-easing').value,
                     reverse: document.getElementById('config-reverse').checked,
-                    slide: { direction: document.getElementById('config-slide-direction').value }
+                    slide: { direction: document.getElementById('config-slide-direction').value },
                 },
                 transition: {
-                    duration: parseInt(document.getElementById('config-trans-duration').value)
+                    duration: parseInt(document.getElementById('config-trans-duration').value),
                 },
-                persistence: document.getElementById('config-persistence').checked
-            });
+                persistence: document.getElementById('config-persistence').checked,
+            })
         }
 
-        // Listeners para mudanças nos inputs
-        ['config-anim-default', 'config-anim-easing', 'config-anim-duration', 'config-slide-direction', 'config-trans-duration', 'config-persistence', 'config-reverse'].forEach(id => {
-            document.getElementById(id).addEventListener('change', updateConfig);
-        });
+        ['config-anim-default', 'config-anim-easing', 'config-anim-duration',
+            'config-slide-direction', 'config-trans-duration',
+            'config-persistence', 'config-reverse'].forEach(id => {
+                const el = document.getElementById(id)
+                if (el) el.addEventListener('change', updateConfig)
+            })
 
-        // Toggle Principal (Usa animação padrão configurada)
         document.getElementById('main-toggle').addEventListener('click', () => {
-            nightwind.toggle();
-        });
+            console.log("[Click] Main Toggle");
+            nightwind.toggle()
+        })
 
-        // Forçar Ripple passando evento
-        document.getElementById('ripple-toggle').addEventListener('click', (e) => {
-            nightwind.toggle({ animation: 'ripple', event: e });
-        });
+        document.getElementById('ripple-toggle').addEventListener('click', e => {
+            console.log("[Click] Ripple Toggle");
+            nightwind.toggle({ animation: 'ripple', event: e })
+        })
 
-        // Inicializar com config atual dos inputs
-        updateConfig();
-
-        const status = document.getElementById('api-status');
+        const status = document.getElementById('api-status')
         if (document.startViewTransition) {
-            status.innerText = "✅ View Transitions API suportada";
-            status.classList.add("text-green-600");
+            status.innerText = '✅ View Transitions API suportada'
+            status.classList.add('text-green-600')
         } else {
-            status.innerText = "❌ View Transitions API NÃO suportada (usando fallback)";
-            status.classList.add("text-red-600");
+            status.innerText = '❌ View Transitions API NÃO suportada — usando fallback'
+            status.classList.add('text-red-600')
         }
     </script>
 

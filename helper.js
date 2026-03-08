@@ -1,66 +1,105 @@
-const DEFAULT_CONFIG = {
+const _config = {
   animation: {
-    default: 'fade',
+    default: "fade",
     duration: 600,
-    easing: 'cubic-bezier(0.7, 0, 0.3, 1)',
+    easing: "cubic-bezier(0.7, 0, 0.3, 1)",
     reverse: false,
-    slide: { direction: 'left' },
+    slide: {
+      direction: "left",
+    },
   },
   transition: {
     duration: 400,
-    easing: 'ease-in-out',
+    easing: "ease-in-out",
   },
   persistence: true,
-  storageKey: 'nightwind-mode',
+  storageKey: "nightwind-mode",
 }
 
-let _config = { ...DEFAULT_CONFIG }
+const DEFAULT_CONFIG = {
+  animation: {
+    default: "fade",
+    duration: 600,
+    easing: "cubic-bezier(0.7, 0, 0.3, 1)",
+    reverse: false,
+    slide: {
+      direction: "left",
+    },
+  },
+  transition: {
+    duration: 400,
+    easing: "ease-in-out",
+  },
+  persistence: true,
+  storageKey: "nightwind-mode",
+}
 
-module.exports = {
+// Deep merge for internal config
+const deepMerge = (target, source) => {
+  for (const key in source) {
+    if (source[key] && typeof source[key] === "object" && !Array.isArray(source[key])) {
+      if (!target[key]) target[key] = {}
+      deepMerge(target[key], source[key])
+    } else {
+      target[key] = source[key]
+    }
+  }
+}
 
-  // ─── Inicialização ──────────────────────────────────────────────
+const nightwind = {
   init: () => {
-    return `(function(){function f(){const p=window.localStorage.getItem('nightwind-mode');if(p)return p;return window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'}if(f()==='dark')document.documentElement.classList.add('dark')})()`
+    return `(function() {
+      try {
+        const config = ${JSON.stringify(DEFAULT_CONFIG)};
+        const storageKey = config.storageKey;
+        const persistence = config.persistence;
+        let dark = false;
+        if (persistence) {
+          const stored = localStorage.getItem(storageKey);
+          if (stored) dark = stored === 'dark';
+          else dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+        if (dark) document.documentElement.classList.add('dark');
+      } catch (e) {}
+    })()`
   },
 
-  // ─── Configuração ────────────────────────────────────────────────
-  configure: (userConfig = {}) => {
-    _config = deepMerge(DEFAULT_CONFIG, userConfig)
-    const root = document.documentElement
-    root.style.setProperty("--nw-anim-duration", `${_config.animation.duration}ms`)
-    root.style.setProperty("--nw-anim-easing", _config.animation.easing)
-    root.style.setProperty("--nightwind-transition-duration", `${_config.transition.duration}ms`)
-  },
-
-  // ─── Helper de transição ─────────────────────────────────────────
-  beforeTransition: () => {
+  configure: (userConfig) => {
+    deepMerge(_config, userConfig)
     const doc = document.documentElement
-    doc.classList.add("nightwind")
-    const duration =
-      parseFloat(getComputedStyle(doc).getPropertyValue("--nightwind-transition-duration")) || 400
-    setTimeout(() => {
-      doc.classList.remove("nightwind")
-    }, duration + 20)
+    doc.style.setProperty("--nightwind-transition-duration", `${_config.transition.duration}ms`)
+    doc.style.setProperty("--nightwind-transition-easing", _config.transition.easing)
   },
 
-  // ─── Toggle principal ────────────────────────────────────────────
-  toggle: (options = {}) => {
-    const isDark = document.documentElement.classList.contains("dark")
-    module.exports.enable(!isDark, options)
-  },
-
-  // ─── Enable específico ───────────────────────────────────────────
   enable: (dark, options = {}) => {
     const applyChange = () => {
       const doc = document.documentElement
-      doc.classList.toggle("dark", dark)
-      doc.classList.toggle("light", !dark)
+      if (dark) {
+        doc.classList.add("dark")
+        doc.classList.remove("light")
+      } else {
+        doc.classList.remove("dark")
+        doc.classList.add("light")
+      }
       if (_config.persistence) {
         localStorage.setItem(_config.storageKey, dark ? "dark" : "light")
       }
     }
 
-    module.exports._animate(applyChange, options, dark)
+    nightwind._animate(applyChange, options, dark)
+  },
+
+  toggle: (options = {}) => {
+    const dark = !document.documentElement.classList.contains("dark")
+    nightwind.enable(dark, options)
+  },
+
+  beforeTransition: () => {
+    const doc = document.documentElement
+    doc.classList.add("nightwind")
+    setTimeout(() => {
+      doc.classList.remove("nightwind")
+    }, _config.transition.duration)
   },
 
   // ─── Motor de animação ───────────────────────────────────────────
@@ -82,42 +121,40 @@ module.exports = {
 
     // Sem suporte ou animação desativada
     if (!document.startViewTransition || animation === "none") {
-      module.exports.beforeTransition()
+      nightwind.beforeTransition()
       applyChange()
       return
     }
 
+    // Configurar variáveis CSS comuns
+    doc.style.setProperty("--nw-anim-duration", `${duration}ms`)
+    doc.style.setProperty("--nw-anim-easing", easing)
+
     // ── Fade ──────────────────────────────────────────────────────
     if (animation === "fade") {
-      document.startViewTransition(applyChange)
+      doc.classList.add("fade")
+      const transition = document.startViewTransition(applyChange)
+      transition.finished.finally(() => doc.classList.remove("fade"))
       return
     }
 
-    // ── Slide ─────────────────────────────────────────────────────
-    if (animation === "slide") {
+    // ── Directional Animations (Slide, Reveal) ────────────────────
+    const directional = ["slide", "reveal"]
+    if (directional.includes(animation)) {
       const direction = getDirection()
-      const cls = `slide-${direction}`
-
-      doc.style.setProperty("--nw-anim-duration", `${duration}ms`)
-      doc.style.setProperty("--nw-anim-easing", easing)
-
+      const cls = `${animation}-${direction}`
       doc.classList.add(cls)
       const transition = document.startViewTransition(applyChange)
       transition.finished.finally(() => doc.classList.remove(cls))
       return
     }
 
-    // ── Reveal (Slide sem mover conteúdo) ────────────────────────
-    if (animation === "reveal") {
-      const direction = getDirection()
-      const cls = `reveal-${direction}`
-
-      doc.style.setProperty("--nw-anim-duration", `${duration}ms`)
-      doc.style.setProperty("--nw-anim-easing", easing)
-
-      doc.classList.add(cls)
+    // ── Generic Animations (Zoom, Flip, Rotate, Wipe, Iris, etc.) ───
+    const generics = ["zoom", "flip", "rotate", "wipe", "iris", "blur", "dissolve", "corner-wipe"]
+    if (generics.includes(animation)) {
+      doc.classList.add(animation)
       const transition = document.startViewTransition(applyChange)
-      transition.finished.finally(() => doc.classList.remove(cls))
+      transition.finished.finally(() => doc.classList.remove(animation))
       return
     }
 
@@ -129,57 +166,43 @@ module.exports = {
       }
 
       const { clientX: x, clientY: y } = event
-      // Se reverse=true: dark=true expa, dark=false enco. Se reverse=false: sempre expa.
       const isExpand = reverse ? dark : true
 
       doc.classList.add("ripple-transition")
       if (!isExpand) doc.classList.add("ripple-reverse")
+      doc.style.setProperty("--nw-ripple-x", `${x}px`)
+      doc.style.setProperty("--nw-ripple-y", `${y}px`)
 
       const transition = document.startViewTransition(applyChange)
+
+      transition.ready.then(() => {
+        const keyframes = isExpand
+          ? [
+            { clipPath: `circle(0% at ${x}px ${y}px)` },
+            { clipPath: `circle(150% at ${x}px ${y}px)` },
+          ]
+          : [
+            { clipPath: `circle(150% at ${x}px ${y}px)` },
+            { clipPath: `circle(0% at ${x}px ${y}px)` },
+          ]
+
+        const pseudo = isExpand ? "::view-transition-new(root)" : "::view-transition-old(root)"
+        document.documentElement.animate(keyframes, {
+          duration,
+          easing,
+          fill: "forwards",
+          pseudoElement: pseudo,
+        })
+      })
 
       transition.finished.finally(() => {
         doc.classList.remove("ripple-transition")
         doc.classList.remove("ripple-reverse")
       })
-
-      transition.ready.then(() => {
-        const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))
-        const fromCircle = `circle(0px at ${x}px ${y}px)`
-        const toCircle = `circle(${radius}px at ${x}px ${y}px)`
-
-        doc.animate(
-          {
-            clipPath: isExpand ? [fromCircle, toCircle] : [toCircle, fromCircle],
-          },
-          {
-            duration,
-            easing,
-            fill: "forwards",
-            pseudoElement: isExpand ? "::view-transition-new(root)" : "::view-transition-old(root)",
-          }
-        )
-      })
-      return
     }
   },
 }
 
+deepMerge(_config, DEFAULT_CONFIG)
 
-
-// ─── Utilitário de merge profundo ──────────────────────────────────
-function deepMerge(base, override) {
-  const result = { ...base }
-  for (const key of Object.keys(override)) {
-    if (
-      override[key] !== null &&
-      typeof override[key] === 'object' &&
-      !Array.isArray(override[key])
-    ) {
-      result[key] = deepMerge(base[key] ?? {}, override[key])
-    } else {
-      result[key] = override[key]
-    }
-  }
-  return result
-}
-
+module.exports = nightwind

@@ -1,15 +1,17 @@
 # Changelog
 
-## [2.6.2] - 2026-03-07
+## [2.7.0] - 2026-03-07
 
 ### Added
-- Animation 'slide' with 4 directions (left, right, top, bottom).
-- `nightwind.configure()` for global configuration (animation, transition, persistence).
-- CSS custom properties `--nw-anim-duration` and `--nw-anim-easing` for fine-grained control.
+- **11 Animation Types**: Native support for Fade, Slide, Ripple, Zoom, Flip, Rotate, Wipe, Iris, Blur, Dissolve, and Corner Wipe.
+- **Global Configuration**: Centralized API via `nightwind.configure()` to manage animations, transitions, and persistence.
+- **Semantic Reverse Logic**: New `reverse` option for smart mirroring of directional animations and adaptive Ripple (expand/contract).
+- **Exponential Easing**: Default `cubic-bezier(0.7, 0, 0.3, 1)` for natural motion, fully configurable via CSS or JS.
+- **CSS Custom Properties**: Exposed `--nw-anim-duration` and `--nw-anim-easing` for advanced styling.
 
 ### Changed
-- `toggle()` now delegates to `enable()` for consistency.
-- Animation engine extracted to internal `_animate()` method.
+- Refactored internal animation engine to be generic and performant using View Transitions API.
+- Updated documentation and demo with the new Animation System guide.
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 

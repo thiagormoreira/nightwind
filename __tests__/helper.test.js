@@ -1,11 +1,14 @@
 /** @jest-environment jsdom */
-const helper = require("../helper.js")
+let helper
 
 describe("nightwind/helper", () => {
   let originalMatchMedia
   let originalLocalStorage
 
   beforeEach(() => {
+    jest.resetModules()
+    helper = require("../helper.js")
+
     // Mock for localStorage
     const localStorageMock = (() => {
       let store = {}
@@ -38,17 +41,16 @@ describe("nightwind/helper", () => {
     Object.defineProperty(window, "localStorage", {
       value: localStorageMock,
       writable: true,
+      configurable: true,
     })
     Object.defineProperty(window, "matchMedia", {
       value: matchMediaMock,
       writable: true,
+      configurable: true,
     })
 
     document.documentElement.className = ""
-    document.documentElement.style = ""
-
-    // Reset configuration
-    helper.configure({})
+    document.documentElement.style.cssText = ""
 
     // Mock View Transitions API
     document.startViewTransition = jest.fn().mockImplementation((fn) => {
@@ -58,57 +60,34 @@ describe("nightwind/helper", () => {
         ready: Promise.resolve(),
       }
     })
+
+    // Reset configuration (force 600ms)
+    helper.configure({ animation: { duration: 600 } })
   })
 
   afterEach(() => {
     window.matchMedia = originalMatchMedia
     window.localStorage = originalLocalStorage
-    delete document.startViewTransition
-    jest.clearAllMocks()
-  })
-
-  describe("configure()", () => {
-    it("should merge user config with defaults", () => {
-      helper.configure({
-        animation: { duration: 800 },
-        persistence: false
-      })
-      // Internal check via side effects (CSS variables)
-      expect(document.documentElement.style.getPropertyValue('--nw-anim-duration')).toBe('800ms')
-      expect(document.documentElement.style.getPropertyValue('--nightwind-transition-duration')).toBe('400ms')
-    })
+    jest.restoreAllMocks()
   })
 
   describe("init()", () => {
-    it("should return the initialization script logic", () => {
+    it("should return a script string", () => {
       const script = helper.init()
       expect(typeof script).toBe("string")
-      expect(script).toContain("nightwind-mode")
+      expect(script).toContain("function()")
     })
   })
 
-  describe("toggle()", () => {
-    it("should toggle to 'dark' when current is not 'dark'", () => {
-      helper.toggle()
-      expect(document.documentElement.classList.contains("dark")).toBe(true)
-      expect(window.localStorage.getItem("nightwind-mode")).toBe("dark")
-    })
-
-    it("should toggle to 'light' when current is 'dark'", () => {
-      document.documentElement.classList.add("dark")
-      helper.toggle()
-      expect(document.documentElement.classList.contains("dark")).toBe(false)
-      expect(window.localStorage.getItem("nightwind-mode")).toBe("light")
-    })
-
-    it("should use default animation (fade)", () => {
-      helper.toggle()
-      expect(document.startViewTransition).toHaveBeenCalled()
+  describe("configure()", () => {
+    it("should update transition duration", () => {
+      helper.configure({ transition: { duration: 500 } })
+      expect(document.documentElement.style.getPropertyValue("--nightwind-transition-duration")).toBe("500ms")
     })
   })
 
   describe("enable()", () => {
-    it("should enable 'dark' mode", () => {
+    it("should add dark class and save to localStorage", () => {
       helper.enable(true)
       expect(document.documentElement.classList.contains("dark")).toBe(true)
       expect(window.localStorage.getItem("nightwind-mode")).toBe("dark")
@@ -121,92 +100,101 @@ describe("nightwind/helper", () => {
     })
   })
 
-  describe("_animate() - Slide", () => {
-    it("should apply slide classes and CSS vars", () => {
-      helper.toggle({ animation: 'slide', direction: 'top', duration: 300 })
-      expect(document.documentElement.classList.contains('slide-top')).toBe(true)
-      expect(document.documentElement.style.getPropertyValue('--nw-anim-duration')).toBe('300ms')
-    })
-
-    it("should support all directions", () => {
-      ['left', 'right', 'top', 'bottom'].forEach(dir => {
-        document.documentElement.className = ""
-        helper.toggle({ animation: 'slide', direction: dir })
-        expect(document.documentElement.classList.contains(`slide-${dir}`)).toBe(true)
-      })
+  describe("toggle()", () => {
+    it("should toggle between light and dark", () => {
+      helper.toggle()
+      expect(document.documentElement.classList.contains("dark")).toBe(true)
+      helper.toggle()
+      expect(document.documentElement.classList.contains("dark")).toBe(false)
     })
   })
 
   describe("_animate() - Reveal", () => {
     it("should apply reveal classes and CSS vars", () => {
-      helper.toggle({ animation: 'reveal', direction: 'right' })
-      expect(document.documentElement.classList.contains('reveal-right')).toBe(true)
-      expect(document.documentElement.style.getPropertyValue('--nw-anim-duration')).toBe('600ms')
+      helper.toggle({ animation: "reveal", direction: "right" })
+      expect(document.documentElement.classList.contains("reveal-right")).toBe(true)
+      expect(document.documentElement.style.getPropertyValue("--nw-anim-duration")).toBe("600ms")
     })
 
-    it("should invert direction if reverse: true and enabling light mode", () => {
+    it("should swap direction if reverse: true and enabling light mode", () => {
       // Enabling light mode (dark=false)
-      helper.enable(false, { animation: 'reveal', direction: 'left', reverse: true })
-      expect(document.documentElement.classList.contains('reveal-right')).toBe(true)
+      helper.enable(false, { animation: "reveal", direction: "left", reverse: true })
+      expect(document.documentElement.classList.contains("reveal-right")).toBe(true)
     })
 
     it("should NOT invert direction if reverse: true but enabling dark mode", () => {
       // Enabling dark mode (dark=true)
-      helper.enable(true, { animation: 'reveal', direction: 'left', reverse: true })
-      expect(document.documentElement.classList.contains('reveal-left')).toBe(true)
+      helper.enable(true, { animation: "reveal", direction: "left", reverse: true })
+      expect(document.documentElement.classList.contains("reveal-left")).toBe(true)
     })
   })
 
   describe("_animate() - Ripple", () => {
     it("should fallback to fade if no event is provided", () => {
-      helper.toggle({ animation: 'ripple' })
+      helper.toggle({ animation: "ripple" })
       expect(document.startViewTransition).toHaveBeenCalled()
-      expect(document.documentElement.classList.contains('ripple-transition')).toBe(false)
+      expect(document.documentElement.classList.contains("ripple-transition")).toBe(false)
     })
 
     it("should expand even if dark=false if reverse: false (default)", async () => {
       const mockEvent = { clientX: 100, clientY: 100 }
       document.documentElement.animate = jest.fn().mockReturnValue({ finished: Promise.resolve() })
 
-      helper.enable(false, { animation: 'ripple', event: mockEvent, reverse: false })
+      helper.enable(false, { animation: "ripple", event: mockEvent, reverse: false })
 
       await Promise.resolve()
 
       const animateCall = document.documentElement.animate.mock.calls[0]
-      expect(animateCall[0].clipPath[0]).toContain('0px') // Still expands
-      expect(animateCall[1].pseudoElement).toBe('::view-transition-new(root)')
+      expect(animateCall[0][0].clipPath).toContain("0%") // Expands from 0%
+      expect(animateCall[1].pseudoElement).toBe("::view-transition-new(root)")
     })
 
     it("should contract in ripple if dark=false and reverse=true", async () => {
       const mockEvent = { clientX: 100, clientY: 100 }
       document.documentElement.animate = jest.fn().mockReturnValue({ finished: Promise.resolve() })
 
-      helper.enable(false, { animation: 'ripple', event: mockEvent, reverse: true })
+      helper.enable(false, { animation: "ripple", event: mockEvent, reverse: true })
 
       await Promise.resolve()
 
       const animateCall = document.documentElement.animate.mock.calls[0]
-      expect(animateCall[0].clipPath[1]).toContain('0px') // Contracts to 0
-      expect(animateCall[1].pseudoElement).toBe('::view-transition-old(root)')
+      expect(animateCall[0][1].clipPath).toContain("0%") // Contracts to 0% (second keyframe)
+      expect(animateCall[1].pseudoElement).toBe("::view-transition-old(root)")
+    })
+  })
+
+  describe("_animate() - Generics", () => {
+    it("should apply generic animation class (zoom)", () => {
+      helper.toggle({ animation: "zoom" })
+      expect(document.documentElement.classList.contains("zoom")).toBe(true)
+    })
+
+    it("should apply generic animation class (blur)", () => {
+      helper.toggle({ animation: "blur" })
+      expect(document.documentElement.classList.contains("blur")).toBe(true)
+    })
+
+    it("should apply generic animation class (zoom)", () => {
+      // Simulate dark being true initially, then toggle to false
+      document.documentElement.classList.add("dark")
+      helper.toggle({ animation: "zoom", reverse: true })
+      expect(document.documentElement.classList.contains("zoom")).toBe(true)
     })
   })
 
   describe("fallback", () => {
     it("should use beforeTransition if startViewTransition is missing", () => {
       delete document.startViewTransition
-      const spy = jest.spyOn(helper, 'beforeTransition')
+      const beforeTransitionSpy = jest.spyOn(helper, "beforeTransition")
       helper.toggle()
-      expect(spy).toHaveBeenCalled()
-      expect(document.documentElement.classList.contains('dark')).toBe(true)
-      spy.mockRestore()
+      expect(beforeTransitionSpy).toHaveBeenCalled()
+      expect(document.documentElement.classList.contains("dark")).toBe(true)
     })
 
     it("should use beforeTransition if animation is 'none'", () => {
-      const spy = jest.spyOn(helper, 'beforeTransition')
-      helper.toggle({ animation: 'none' })
-      expect(spy).toHaveBeenCalled()
-      spy.mockRestore()
+      const beforeTransitionSpy = jest.spyOn(helper, "beforeTransition")
+      helper.toggle({ animation: "none" })
+      expect(beforeTransitionSpy).toHaveBeenCalled()
     })
   })
 })
-

@@ -6,6 +6,8 @@ IMPORTANT: This repository is a maintained fork of the original "nightwind" proj
 
 A Tailwind CSS plugin that gives you an **out-of-the-box, customisable, overridable dark mode.**
 
+[![v2.7.0](https://img.shields.io/badge/version-2.7.0-blue.svg)](https://www.npmjs.com/package/@thiagormoreira/nightwind)
+
 ---
 
 Nightwind uses the existing Tailwind color palette and your own custom colors to automatically generate the dark mode version of the Tailwind color classes you use.
@@ -16,8 +18,9 @@ You can see it in action on https://nightwindcss.com
 
 1. [Installation](#installation)
 2. [Helper functions](#helper-functions)
-3. [Getting started](#getting-started)
-4. [Configuration](#configuration)
+3. [Animation System](#animation-system)
+4. [Getting started](#getting-started)
+5. [Configuration](#configuration)
    - [Colors](#colors)
    - [Variants and color classes](#variants-and-color-classes)
    - [The 'nightwind-prevent' class](#the-nightwind-prevent-class)
@@ -97,14 +100,25 @@ export default function Layout() {
 Similarly, you can use the `toggle` function to switch between dark and light mode.
 
 ```js
-// React Example
-import nightwind from "nightwind/helper"
+// React Example — toggle with animation
+import nightwind from 'nightwind/helper'
 
 export default function Navbar() {
   return (
-    // ...
-    <button onClick={() => nightwind.toggle()}></button>
-    // ...
+    <>
+      {/* Simple toggle with default animation */}
+      <button onClick={() => nightwind.toggle()}>Toggle</button>
+
+      {/* Ripple from click point */}
+      <button onClick={(e) => nightwind.toggle({ animation: 'ripple', event: e })}>
+        Ripple Toggle
+      </button>
+
+      {/* Slide from left */}
+      <button onClick={() => nightwind.toggle({ animation: 'slide', direction: 'left' })}>
+        Slide Toggle
+      </button>
+    </>
   )
 }
 ```
@@ -131,6 +145,92 @@ export default function Navbar() {
 Nightwind also exports a `beforeTransition` function that you can leverage in case you prefer to build your own toggle functions. It prevents unwanted transitions as a side-effect of having nightwind [...]
 
 Check out the `toggle` function in the [Nextjs example below](#examples) for an example of how this could be implemented.
+
+## Animation System
+
+Nightwind includes a built-in animation system powered by the [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API). All animations fall back gracefully to a CSS transition for browsers that don't support the API.
+
+#### Global Configuration
+
+Configure the animation system once via `nightwind.configure()`:
+
+```js
+nightwind.configure({
+  animation: {
+    default: 'fade',              // Default animation for toggle/enable
+    duration: 600,                // Duration in ms
+    easing: 'cubic-bezier(0.7, 0, 0.3, 1)', // CSS easing or cubic-bezier
+    reverse: false,               // Reverse direction on light mode
+    slide: {
+      direction: 'left',          // 'left' | 'right' | 'top' | 'bottom'
+    },
+  },
+  transition: {
+    duration: 400,                // CSS transition duration (ms)
+    easing: 'ease-in-out',
+  },
+  persistence: true,              // Persist mode in localStorage
+  storageKey: 'nightwind-mode',   // localStorage key
+})
+```
+
+#### Per-call Options
+
+Any option can be overridden per call:
+
+```js
+// Use ripple just for this click
+nightwind.toggle({ animation: 'ripple', event: e })
+
+// Slide from top with custom duration
+nightwind.toggle({ animation: 'slide', direction: 'top', duration: 400 })
+
+// Disable animation for this call
+nightwind.enable(true, { animation: 'none' })
+```
+
+#### Available Animations
+
+| Animation | Description | Needs event? | Supports `direction`? | Supports `reverse`? |
+|---|---|---|---|---|
+| `fade` | Cross-fade between themes | No | No | No |
+| `slide` | Page slides in from a direction, moving content | No | Yes (`left` `right` `top` `bottom`) | Yes |
+| `reveal` | New theme reveals from a direction without moving content | No | Yes (`left` `right` `top` `bottom`) | Yes |
+| `ripple` | Circular expand/contract from click point | **Yes** | No | Yes |
+| `zoom` | New theme scales in from center | No | No | No |
+| `flip` | 3D Y-axis rotation between themes | No | No | No |
+| `rotate` | Subtle 2D rotation with scale | No | No | No |
+| `wipe` | Horizontal clip-path wipe | No | No | No |
+| `iris` | Circle opens from center (ripple without click) | No | No | No |
+| `blur` | Blur-out old, blur-in new | No | No | No |
+| `dissolve` | Blur + grayscale cross-fade | No | No | No |
+| `corner-wipe` | Reveal from top-right corner polygon | No | No | No |
+| `none` | Instant switch, no animation | No | No | No |
+
+#### The `reverse` Option
+
+When `reverse: true`, directional animations (`slide`, `reveal`) invert their direction when switching to light mode, creating a natural "back and forth" feel:
+
+```js
+// Left when going dark, right when going light
+nightwind.configure({ animation: { default: 'slide', reverse: true } })
+```
+
+For `ripple`, `reverse: true` makes the circle contract (instead of expand) when switching to light mode.
+
+#### CSS Custom Properties
+
+The animation system exposes two CSS custom properties that you can use directly in your own CSS:
+
+| Property | Default | Description |
+|---|---|---|
+| `--nw-anim-duration` | `600ms` | Duration of the View Transition animation |
+| `--nw-anim-easing` | `cubic-bezier(0.7, 0, 0.3, 1)` | Easing of the View Transition animation |
+| `--nightwind-transition-duration` | `400ms` | Duration of the CSS color transitions |
+
+#### Browser Support
+
+The View Transitions API is supported in Chrome 111+, Edge 111+, and Safari 18+. Firefox does not yet support it. In unsupported browsers, Nightwind automatically falls back to the CSS transition system (`beforeTransition`) with no configuration required.
 
 ### Examples
 
