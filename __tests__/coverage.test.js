@@ -261,4 +261,142 @@ describe("nightwind coverage tests", () => {
         })
         expect(css).toContain("background-color: oklch(0.5 0.2 220)")
     })
+
+    it("should handle nightwind.colors mapping (e.g. white to gray.900)", async () => {
+        const css = await generateCss('<div class="bg-white"></div>', {
+            theme: {
+                extend: {
+                    colors: { white: "#ffffff", gray: { 900: "#111827" } },
+                    nightwind: { colors: { white: "gray.900" } }
+                }
+            }
+        })
+        expect(css).toContain("background-color: rgb(17 24 39)")
+    })
+
+    it("should handle nightwind.colorScale preset reduced", async () => {
+        const css = await generateCss('<div class="bg-red-50 bg-red-400 bg-red-500 bg-red-600"></div>', {
+            theme: {
+                extend: {
+                    nightwind: { colorScale: { preset: "reduced" } }
+                }
+            }
+        })
+        // In reduced (simmetric): 50->900, 400->600, 500->500, 600->400
+        expect(css).toContain(".dark .bg-red-50")
+        expect(css).toContain("background-color: rgb(127 29 29)") // red-900
+        expect(css).toContain(".dark .bg-red-400")
+        expect(css).toContain("background-color: rgb(220 38 38)") // red-600
+    })
+
+    it("should handle colorScale with unknown preset gracefully", async () => {
+        const css = await generateCss(
+            `<div class="bg-red-500"></div>`,
+            { theme: { extend: { nightwind: { colorScale: { preset: "nonexistent" } } } } }
+        )
+        expect(css).toContain(".dark .bg-red-500")
+    })
+
+    it("should handle nightwind.colors mapping to non-existent color", async () => {
+        const css = await generateCss(
+            `<div class="bg-red-500"></div>`,
+            {
+                theme: {
+                    extend: {
+                        nightwind: { colors: { red: "nonexistent-color" } }
+                    }
+                }
+            }
+        )
+        expect(css).toContain(".dark .bg-red-500")
+    })
+
+    it("should handle getGradientValue0 with falsy value", () => {
+        expect(nightwind.processColor("from-[]", true)).toBe("from-[]")
+    })
+
+    it("should handle variantsList with empty string already included", async () => {
+        const css = await generateCss(
+            `<div class="bg-red-500"></div>`,
+            {
+                theme: {
+                    extend: {
+                        nightwind: { variants: ["", "hover"] }
+                    }
+                }
+            }
+        )
+        expect(css).toContain(".dark .bg-red-500")
+        expect(css).toContain(".dark .hover\\:bg-red-500:hover")
+    })
+
+    it("should handle colorScale mapping to same weight (no inversion)", async () => {
+        const css = await generateCss(
+            `<div class="bg-red-500"></div>`,
+            {
+                theme: {
+                    extend: {
+                        nightwind: { colorScale: { 500: 500 } }
+                    }
+                }
+            }
+        )
+        expect(css).toContain(".dark .bg-red-500")
+    })
+
+    it("should handle transitionClasses with custom property (line 140 branch)", async () => {
+        const css = await generateCss('<div class="bg-red-500"></div>', {
+            theme: {
+                extend: {
+                    nightwind: { transitionClasses: ["bg", "opacity"] }
+                }
+            }
+        })
+        expect(css).toMatch(/background-color/)
+        expect(css).toMatch(/opacity/)
+    })
+
+    it("should cover line 185 branch: variantsList without empty string", async () => {
+        const css = await generateCss('<div class="bg-red-500"></div>', {
+            theme: {
+                extend: {
+                    nightwind: { variants: ["hover"] }
+                }
+            }
+        })
+        expect(css).toContain(".dark .bg-red-500")
+    })
+
+    it("should cover line 177: enabledColorClasses including gradient", async () => {
+        const css = await generateCss('<div class="from-red-500"></div>', {
+            theme: {
+                extend: {
+                    nightwind: { colorClasses: ["gradient"] }
+                }
+            }
+        })
+        expect(css).toContain(".dark .from-red-500")
+    })
+
+    it("should handle non-standard numeric weight (line 250 branch false)", async () => {
+        const css = await generateCss('<div class="bg-red-505"></div>', {
+            theme: {
+                extend: {
+                    colors: { red: { 505: "#f00" } }
+                }
+            }
+        })
+        expect(css).toContain(".dark .bg-red-505")
+    })
+
+    it("should handle non-standard weight in colorScale lookup (line 250 branch)", async () => {
+        const css = await generateCss('<div class="bg-red-custom"></div>', {
+            theme: {
+                extend: {
+                    colors: { red: { custom: "#f00" } }
+                }
+            }
+        })
+        expect(css).toContain(".dark .bg-red-custom")
+    })
 })

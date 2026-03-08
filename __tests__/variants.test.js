@@ -23,7 +23,7 @@ async function generateCss(html, config = {}) {
                         }
                     },
                     nightwind: {
-                        variants: ["group-hover", "peer-focus"]
+                        variants: ["", "hover", "focus", "disabled", "group-hover", "peer-focus"]
                     }
                 },
             },

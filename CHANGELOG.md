@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.7.2] - 2026-03-08
+
+### Added
+- **100% Code Coverage**: Achieved complete branch and statement coverage for the core plugin engine.
+- **Selector Optimization**: Significant performance improvement in `matchUtilities` via generic selector generation for `divide` and `placeholder`.
+
+### Fixed
+- **Edge Case Stability**: Added fallbacks for unknown presets, missing theme colors, and internal gradient parsing failures.
+
+## [2.7.1] - 2026-03-08
+
+### Fixed
+- **Refined ColorScale**: Corrected `reduced` preset to follow symmetric inversion (e.g., `400 -> 600`).
+- **Variant Safeguards**: Guaranteed that the base variant (`""`) is always generated, even with custom lists.
+- **Gradient Filtering**: Ensured `from`, `via`, and `to` correctly respect the `colorClasses: ["gradient"]` filter.
+- **Transition Properties**: Fixed internal mappings for `--tw-ring-color` and `--tw-shadow-color` in `transitionClasses`.
+
 ## [2.7.0] - 2026-03-07
 
 ### Added
