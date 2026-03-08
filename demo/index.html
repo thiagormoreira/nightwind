@@ -64,91 +64,81 @@
     <!-- Painel de Configuração -->
     <div class="fixed top-4 right-4 z-50 flex flex-col items-end gap-2 max-w-sm">
         <div
-            class="bg-white/90 dark:bg-gray-950/90 backdrop-blur-xl p-5 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col gap-4 w-72 transition-all">
+            class="bg-white/90 dark:bg-gray-950/90 backdrop-blur-xl p-5 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col gap-4 w-80 transition-all">
             <div>
                 <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-500 dark:text-indigo-400 mb-3">
-                    Configuração Global</p>
+                    Controle de Animações</p>
 
-                <div class="space-y-3">
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-medium text-gray-400">Animação Padrão</label>
-                            <select id="config-anim-default"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-900 outline-none focus:ring-2 focus:ring-indigo-500/20">
-                                <option value="fade">Fade</option>
-                                <option value="slide">Slide</option>
-                                <option value="reveal">Reveal</option>
-                                <option value="ripple">Ripple</option>
-                                <option value="zoom">Zoom</option>
-                                <option value="flip">Flip</option>
-                                <option value="rotate">Rotate</option>
-                                <option value="wipe">Wipe</option>
-                                <option value="iris">Iris</option>
-                                <option value="blur">Blur</option>
-                                <option value="dissolve">Dissolve</option>
-                                <option value="corner-wipe">Corner Wipe</option>
-                                <option value="none">None</option>
-                            </select>
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-medium text-gray-400">Velocidade (Easing)</label>
-                            <select id="config-anim-easing"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-900 outline-none focus:ring-2 focus:ring-indigo-500/20">
-                                <option value="cubic-bezier(0.7, 0, 0.3, 1)">Exponential</option>
-                                <option value="ease-in-out">Ease In Out</option>
-                                <option value="linear">Linear</option>
-                                <option value="ease-in">Ease In</option>
-                                <option value="ease-out">Ease Out</option>
-                            </select>
-                        </div>
-                    </div>
-
+                <div class="space-y-4">
+                    <!-- Configurações Globais -->
                     <div class="grid grid-cols-2 gap-2">
                         <div class="space-y-1">
                             <label class="text-[10px] font-medium text-gray-400">Duração (ms)</label>
                             <input type="number" id="config-anim-duration" value="600" step="50"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-900 outline-none focus:ring-2 focus:ring-indigo-500/20">
+                                class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg px-2 py-1.5 text-xs text-gray-900 dark:text-gray-100 outline-none focus:ring-2 focus:ring-indigo-500/20">
                         </div>
                         <div class="space-y-1">
-                            <label class="text-[10px] font-medium text-gray-400">Slide Dir</label>
-                            <select id="config-slide-direction"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-900 outline-none focus:ring-2 focus:ring-indigo-500/20">
-                                <option value="left">Left</option>
-                                <option value="right">Right</option>
-                                <option value="top">Top</option>
-                                <option value="bottom">Bottom</option>
+                            <label class="text-[10px] font-medium text-gray-400">Easing</label>
+                            <select id="config-anim-easing"
+                                class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg px-2 py-1.5 text-xs text-gray-900 dark:text-gray-100 outline-none focus:ring-2 focus:ring-indigo-500/20">
+                                <option value="cubic-bezier(0.7, 0, 0.3, 1)">Exponential</option>
+                                <option value="ease-in-out">Ease In Out</option>
+                                <option value="linear">Linear</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Transition Settings -->
-                    <div class="pt-2 border-t border-gray-100 dark:border-gray-900 space-y-3">
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-medium text-gray-400">Transição CSS (ms)</label>
-                            <input type="number" id="config-trans-duration" value="400" step="50"
-                                class="w-full bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-900 outline-none focus:ring-2 focus:ring-indigo-500/20">
+                    <!-- Efeitos de Clique Único -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-medium text-gray-400 uppercase tracking-tighter">Efeitos
+                            Simples</label>
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button data-anim="fade" class="anim-btn">Fade</button>
+                            <button data-anim="zoom" class="anim-btn">Zoom</button>
+                            <button data-anim="flip" class="anim-btn">Flip</button>
+                            <button data-anim="rotate" class="anim-btn">Rotate</button>
+                            <button data-anim="blur" class="anim-btn">Blur</button>
+                            <button data-anim="dissolve" class="anim-btn">Dissolve</button>
+                            <button data-anim="corner-wipe" class="anim-btn col-span-2">Corner Wipe</button>
+                            <button data-anim="iris" class="anim-btn">Iris</button>
                         </div>
-                        <div class="flex items-center justify-between py-1">
-                            <label class="text-[10px] font-medium text-gray-400">Persistência</label>
-                            <input type="checkbox" id="config-persistence" checked
-                                class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500/20">
+                    </div>
+
+                    <!-- Efeitos Direcionais (Slide) -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-medium text-gray-400 uppercase tracking-tighter">Slide
+                            (Direção)</label>
+                        <div class="grid grid-cols-4 gap-1.5">
+                            <button data-anim="slide" data-dir="left" class="anim-btn">L</button>
+                            <button data-anim="slide" data-dir="right" class="anim-btn">R</button>
+                            <button data-anim="slide" data-dir="top" class="anim-btn">T</button>
+                            <button data-anim="slide" data-dir="bottom" class="anim-btn">B</button>
                         </div>
-                        <div class="flex items-center justify-between py-1">
+                    </div>
+
+                    <!-- Efeitos Direcionais (Reveal/Wipe) -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-medium text-gray-400 uppercase tracking-tighter">Reveal /
+                            Wipe</label>
+                        <div class="grid grid-cols-5 gap-1.5">
+                            <button data-anim="reveal" data-dir="left" class="anim-btn">RL</button>
+                            <button data-anim="reveal" data-dir="right" class="anim-btn">RR</button>
+                            <button data-anim="reveal" data-dir="top" class="anim-btn">RT</button>
+                            <button data-anim="reveal" data-dir="bottom" class="anim-btn">RB</button>
+                            <button data-anim="wipe" class="anim-btn">Wipe</button>
+                        </div>
+                    </div>
+
+                    <!-- Outros Controles -->
+                    <div class="pt-2 border-t border-gray-100 dark:border-gray-900 space-y-2">
+                        <div class="flex items-center justify-between">
                             <label class="text-[10px] font-medium text-gray-400">Animação Reversa</label>
                             <input type="checkbox" id="config-reverse"
                                 class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500/20">
                         </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="pt-3 border-t border-gray-100 dark:border-gray-900 space-y-2">
-                        <button id="main-toggle"
-                            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white p-2.5 rounded-xl font-bold text-xs transition-all shadow-lg shadow-indigo-500/20 active:scale-95">
-                            Toggle Principal
-                        </button>
                         <button id="ripple-toggle"
-                            class="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 p-2.5 rounded-xl font-bold text-xs transition-all hover:bg-gray-50 dark:hover:bg-gray-800 active:scale-95">
-                            Forçar Ripple (Event)
+                            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-xl font-bold text-[11px] transition-all shadow-lg shadow-indigo-500/20 active:scale-95">
+                            Ripple (Event Based)
                         </button>
                     </div>
                 </div>
@@ -287,61 +277,47 @@
 
     <script src="./nightwind-browser.js"></script>
     <script>
-        // Inicialização
-        nightwind.configure({
+        // Configurações Globais reativas
+        const getGlobalConfig = () => ({
             animation: {
-                default: document.getElementById('config-anim-default').value,
                 duration: parseInt(document.getElementById('config-anim-duration').value),
                 easing: document.getElementById('config-anim-easing').value,
                 reverse: document.getElementById('config-reverse').checked,
-                slide: { direction: document.getElementById('config-slide-direction').value },
-            },
-            transition: {
-                duration: parseInt(document.getElementById('config-trans-duration').value),
-            },
-            persistence: document.getElementById('config-persistence').checked,
-        })
+            }
+        });
 
-        function updateConfig() {
-            nightwind.configure({
-                animation: {
-                    default: document.getElementById('config-anim-default').value,
-                    duration: parseInt(document.getElementById('config-anim-duration').value),
-                    easing: document.getElementById('config-anim-easing').value,
-                    reverse: document.getElementById('config-reverse').checked,
-                    slide: { direction: document.getElementById('config-slide-direction').value },
-                },
-                transition: {
-                    duration: parseInt(document.getElementById('config-trans-duration').value),
-                },
-                persistence: document.getElementById('config-persistence').checked,
-            })
-        }
+        // Handler para botões de animação
+        document.querySelectorAll('.anim-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const anim = btn.getAttribute('data-anim');
+                const dir = btn.getAttribute('data-dir');
 
-        ['config-anim-default', 'config-anim-easing', 'config-anim-duration',
-            'config-slide-direction', 'config-trans-duration',
-            'config-persistence', 'config-reverse'].forEach(id => {
-                const el = document.getElementById(id)
-                if (el) el.addEventListener('change', updateConfig)
-            })
+                const config = getGlobalConfig();
+                config.animation.default = anim;
+                if (dir) config.animation.slide = { direction: dir };
 
-        document.getElementById('main-toggle').addEventListener('click', () => {
-            console.log("[Click] Main Toggle");
-            nightwind.toggle()
-        })
+                console.log(`[Demo] Executing: ${anim} ${dir ? `(${dir})` : ''}`);
 
+                nightwind.configure(config);
+                nightwind.toggle();
+            });
+        });
+
+        // Ripple específico (baseado em evento)
         document.getElementById('ripple-toggle').addEventListener('click', e => {
-            console.log("[Click] Ripple Toggle");
-            nightwind.toggle({ animation: 'ripple', event: e })
-        })
+            const config = getGlobalConfig();
+            config.animation.default = 'ripple';
 
+            nightwind.configure(config);
+            nightwind.toggle({ event: e });
+        });
+
+        // Status da API
         const status = document.getElementById('api-status')
         if (document.startViewTransition) {
-            status.innerText = '✅ View Transitions API suportada'
-            status.classList.add('text-green-600')
+            status.innerHTML = '<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> <span class="text-green-600 font-bold">API ATIVA</span></span>';
         } else {
-            status.innerText = '❌ View Transitions API NÃO suportada — usando fallback'
-            status.classList.add('text-red-600')
+            status.innerHTML = '<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span> <span class="text-red-600 font-bold">API FALLBACK</span></span>';
         }
     </script>
 

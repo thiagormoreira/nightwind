@@ -390,3 +390,8 @@ html.corner-wipe::view-transition-new(root) {
     --nw-anim-duration: 600ms;
     --nw-anim-easing: cubic-bezier(0.7, 0, 0.3, 1);
 }
+
+/* Demo specific buttons */
+.anim-btn {
+    @apply bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg px-1.5 py-1.5 text-[9px] font-bold text-gray-600 dark:text-gray-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:border-indigo-200 dark:hover:border-indigo-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all active:scale-90 select-none;
+}
