@@ -1,17 +1,31 @@
 # Changelog
 
+## [2.8.0] - 2026-03-24
+
+### Added
+
+- **Opacity-aware dark mode**: Automatic dark mode generation for Tailwind opacity syntax classes (e.g., `bg-red-600/50`, `text-blue-500/75`).
+- **Standard opacity support**: Supports `25%`, `50%`, and `75%` opacities for all standard color utilities (bg, text, border, ring, etc.).
+
+### Changed
+
+- Pre-generates dark mode variants for opacity classes in the main color loop instead of relying on `matchUtilities` (Tailwind 4 compatibility).
+
 ## [2.7.2] - 2026-03-08
 
 ### Added
+
 - **100% Code Coverage**: Achieved complete branch and statement coverage for the core plugin engine.
 - **Selector Optimization**: Significant performance improvement in `matchUtilities` via generic selector generation for `divide` and `placeholder`.
 
 ### Fixed
+
 - **Edge Case Stability**: Added fallbacks for unknown presets, missing theme colors, and internal gradient parsing failures.
 
 ## [2.7.1] - 2026-03-08
 
 ### Fixed
+
 - **Refined ColorScale**: Corrected `reduced` preset to follow symmetric inversion (e.g., `400 -> 600`).
 - **Variant Safeguards**: Guaranteed that the base variant (`""`) is always generated, even with custom lists.
 - **Gradient Filtering**: Ensured `from`, `via`, and `to` correctly respect the `colorClasses: ["gradient"]` filter.
@@ -20,6 +34,7 @@
 ## [2.7.0] - 2026-03-07
 
 ### Added
+
 - **11 Animation Types**: Native support for Fade, Slide, Ripple, Zoom, Flip, Rotate, Wipe, Iris, Blur, Dissolve, and Corner Wipe.
 - **Global Configuration**: Centralized API via `nightwind.configure()` to manage animations, transitions, and persistence.
 - **Semantic Reverse Logic**: New `reverse` option for smart mirroring of directional animations and adaptive Ripple (expand/contract).
@@ -27,6 +42,7 @@
 - **CSS Custom Properties**: Exposed `--nw-anim-duration` and `--nw-anim-easing` for advanced styling.
 
 ### Changed
+
 - Refactored internal animation engine to be generic and performant using View Transitions API.
 - Updated documentation and demo with the new Animation System guide.
 
@@ -35,6 +51,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### [2.6.1](https://github.com/thiagormoreira/nightwind/compare/v2.5.5...v2.6.1) (2026-03-07)
 
 ### Changed
+
 - **Semantic Color Inversion**: Colors are now inverted by lightness (HSL) instead of full spectrum (RGB), preserving hue and saturation. A red alert stays red in dark mode — just darker. Legacy behavior available via `invertMode: 'spectrum'` config option.
 
 ### [2.5.5](https://github.com/thiagormoreira/nightwind/compare/v2.5.4...v2.5.5) (2026-03-07)
@@ -50,23 +67,27 @@ All notable changes to this project will be documented in this file. See [standa
 ## [2.5.0](https://github.com/thiagormoreira/nightwind/compare/v2.4.1...v2.5.0) (2026-03-07)
 
 ### Added
+
 - **View Transitions API Support**: Integrated native browser View Transitions API for cinematic theme switching.
 - **Cinematic Ripple Effect**: Added an optional 'ripple' animation that expands from the user's click point.
 - **Toggle Animation Options**: Refactored `nightwind.toggle()` and `nightwind.enable()` to accept `animation: 'fade' | 'ripple' | 'none'`.
 - **Advanced Transition Orchestration**: Implemented zero-conflict logic that deactivates CSS transitions during View Transitions for perfect visual snapshots.
 
 ### Fixed
+
 - **API Reference Bug**: Corrected global View Transition API reference from `documentElement` to `document`.
 - **Double-call Bug**: Refactored internal architecture to prevent redundant transition triggers in fallback mode.
 - **Backward Compatibility**: Guaranteed 100% stable fallbacks for browsers without View Transition support.
 
 ### Fixed
+
 - **Branch Coverage**: Achieved 100% Branch Coverage by refactoring `@media` initialization logic and handling remaining edge cases in theme colors and typography.
 - **Improved Stability**: Reinforced type checking for non-string values across all color utilities.
 
 ## [2.4.0](https://github.com/thiagormoreira/nightwind/compare/v2.3.0...v2.4.0) (2026-03-07)
 
 ### Added
+
 - **Modern Color Support**: Full support for CSS Color Level 4, including `oklch()`, `hsl()`, and `hsla()`.
 - **Advanced HSL Inversion**: Semantic inversion for HSL colors that preserves Hue/Matiz and inverts only Lightness.
 - **Universal Angle Units**: Support for `deg`, `grad`, `rad`, and `turn` in HSL hue definitions.
@@ -74,46 +95,48 @@ All notable changes to this project will be documented in this file. See [standa
 - **Future-Proofing (Tailwind v4)**: Removed legacy `opacityVar` dependency, aligning with Tailwind v4's high-performance color engine.
 
 ### Changed
+
 - **Performance Optimization**: Implemented extreme hoisting of style objects and color parsing outside critical loops.
 - **Functional Normalization (Option B)**: Enforced functional format return (`rgb()`, `hsl()`) for all colors to ensure stability across JIT utilites.
 - **Alpha Consistency**: Uniform alpha channel normalization across RGB, HSL, and OKLCH (0-1 float range).
 - **Format Preservation**: Preservation of original formatting (spaces vs commas) for HSL/OKLCH when inversion is not required.
 
 ### Fixed
+
 - **Gradient Alpha Bug**: Resolved double-alpha issues and fixed percentage-based alpha support in gradients.
 - **Dead Code Cleanup**: Removed unused `themeColorValues` logic and internal redundancies.
 - **Structural CSS Issues**: Fixed incorrect positioning of `fixedElementClass` and resolved `@media` flat-key selector bugs.
 - **Typography Sync**: Corrected HSL detection and inversion within typography selectors.
 
-
 ## [2.3.0](https://github.com/thiagormoreira/nightwind/compare/v2.2.1...v2.3.0) (2026-02-22)
-
 
 ### Features
 
-* add support for dark: prefix as a developer override ([722e820](https://github.com/thiagormoreira/nightwind/commit/722e8209374d648c22b5bee5b35f9180f03eefa5))
+- add support for dark: prefix as a developer override ([722e820](https://github.com/thiagormoreira/nightwind/commit/722e8209374d648c22b5bee5b35f9180f03eefa5))
 
 ### [2.2.1](https://github.com/thiagormoreira/nightwind/compare/v2.2.0...v2.2.1) (2026-02-21)
 
 ## [2.2.0](https://github.com/thiagormoreira/nightwind/compare/v2.1.1...v2.2.0) (2026-02-21)
 
-
 ### Features
 
-* add standard-version for automated release management. ([6675b2c](https://github.com/thiagormoreira/nightwind/commit/6675b2c65282df80067f362bc077934b7e6ed35d))
+- add standard-version for automated release management. ([6675b2c](https://github.com/thiagormoreira/nightwind/commit/6675b2c65282df80067f362bc077934b7e6ed35d))
 
 ## [2.1.0] - 2026-02-20
 
 ### Added
+
 - **Hybrid Performance Optimization**: Implemented a hybrid approach combining optimized static generation for standard colors/weights with `matchUtilities` for arbitrary values, ensuring 100% reliability for variants like `hover`, `group-hover`, and `peer-focus`.
 - **Arbitrary Color Support**: Automatic dark mode inversion for arbitrary color values (e.g., `bg-[#ffffff]`, `text-[rgb(0,0,0)]`).
 - **ESLint Browser Support**: Added proper global definitions for `helper.js` in `eslint.config.js`.
 
 ### Changed
+
 - **Performance Pre-calculation**: Optimized the plugin logic to pre-calculate color mappings and rules, significantly reducing PostCSS processing time during Tailwind JIT.
 - **Transition Synchronization**: The plugin now injects `--nightwind-transition-duration` into `:root` (default `400ms`) for perfect sync with the transition helper.
 
 ### Fixed
+
 - **Variant Reliability**: Fixed issues with `matchComponents` shadowing core utilities, restoring correct variant handling in dark mode.
 - **Linting Errors**: Resolved all `no-undef` and `no-unused-vars` errors in `src/index.js` and `helper.js`.
 - **Helper Compatibility**: Restored toggling of the `light` class in `helper.js` for backward compatibility with custom CSS workflows.
@@ -121,29 +144,35 @@ All notable changes to this project will be documented in this file. See [standa
 ## [2.0.2] - 2026-02-20
 
 ### Added
+
 - **Default Variants**: Added out-of-the-box support for `focus`, `active`, `focus-within`, `focus-visible`, and `disabled`.
 - **Selection Prefix**: Added support for `selection` utility inversion.
 
 ### Fixed
+
 - **Variant Selector Precision**: Implemented strict variant matching to prevent false positives in color names (e.g., `hoverred` no longer triggers `:hover`).
 - **Group & Peer Variants**: Resolved issues with `group-*` and `peer-*` variants, ensuring correct selector generation for nested and sibling elements.
 
 ## [2.0.1] - 2026-02-20
 
 ### Changed
+
 - **Node.js Requirement**: Minimum Node.js version updated to `v20.12.0` (dropping support for Node 18).
 
 ### Fixed
+
 - **ESLint Compatibility**: Resolved `TypeError: util.styleText is not a function` in ESLint 10 by upgrading the project's runtime requirements.
 
 ## [2.0.0] - 2026-02-20
 
 ### Added
+
 - **Universal Opacity Support**: Dynamic CSS attribute selectors ([class*=".../"]) now support ANY opacity modifier (including arbitrary values like `bg-red-500/[0.3]`) with zero performance overhead.
 - **100% Color Utility Coverage**: Added support for `outline-`, `decoration-`, `accent-`, `caret-`, `fill-`, `stroke-`, and `shadow-color` (via `--tw-shadow-color`).
 - **Enhanced Transitions**: Default transition duration increased to `400ms` with `ease-in-out` for a smoother theme-switching experience.
 
 ### Fixed
+
 - **PostCSS Performance**: Resolved Out-Of-Memory (OOM) errors and hangs caused by static opacity combinatorial explosion.
 - **Color Inversion Precision**: Improved `white`/`black` inversion when modifiers are present.
 - **Utility Conflicts**: Fixed detection logic for overlapping utilities like `ring-` and `ring-offset-`.
@@ -151,12 +180,14 @@ All notable changes to this project will be documented in this file. See [standa
 ## [1.3.0] - 2026-02-20
 
 ### Changed
+
 - **Maintenance**: General refactoring and cleanup of `src/index.js`.
 - **CI/CD**: Improved GitHub Actions workflows and testing environment consistency.
 
 ## [1.2.0] - 2026-02-20
 
 ### Added
+
 - **Testing Infrastructure**: Initial setup of the Jest test suite for color inversion logic.
 - **Helper Refinement**: Initial refactor of `helper.js` for better browser compatibility.
 
