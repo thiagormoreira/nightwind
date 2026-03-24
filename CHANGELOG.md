@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.8.1] - 2026-03-24
+
+### Fixed
+
+- **Named colors (white, black, transparent)**: Fixed opacity dark mode support for named colors by adding proper handling in `handleOpacityColor`.
+
 ## [2.8.0] - 2026-03-24
 
 ### Added

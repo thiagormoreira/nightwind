@@ -1,23 +1,33 @@
 const plugin = require("tailwindcss/plugin")
 
 function rgbToHsl(r, g, b) {
-  r /= 255; g /= 255; b /= 255
-  const max = Math.max(r, g, b), min = Math.min(r, g, b)
-  let h = 0, s = 0
+  r /= 255
+  g /= 255
+  b /= 255
+  const max = Math.max(r, g, b),
+    min = Math.min(r, g, b)
+  let h = 0,
+    s = 0
   const l = (max + min) / 2
   if (max !== min) {
     const d = max - min
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
     switch (max) {
-      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break
-      case g: h = ((b - r) / d + 2) / 6; break
-      case b: h = ((r - g) / d + 4) / 6; break
+      case r:
+        h = ((g - b) / d + (g < b ? 6 : 0)) / 6
+        break
+      case g:
+        h = ((b - r) / d + 2) / 6
+        break
+      case b:
+        h = ((r - g) / d + 4) / 6
+        break
     }
   }
   return [
     Math.round(h * 360),
     parseFloat((s * 100).toFixed(1)),
-    parseFloat((l * 100).toFixed(1))
+    parseFloat((l * 100).toFixed(1)),
   ]
 }
 
@@ -36,16 +46,19 @@ const processColor = (value, shouldInvert = true, invertMode = "lightness") => {
     const parts = trimmed.match(/[\d.%]+/g)
     if (!parts || parts.length < 3) return value
     const l = parts[0]
-    const lVal = parseFloat(l.endsWith("%")
-      ? (100 - parseFloat(l)).toFixed(1)
-      : (1 - parseFloat(l)).toFixed(3)
+    const lVal = parseFloat(
+      l.endsWith("%")
+        ? (100 - parseFloat(l)).toFixed(1)
+        : (1 - parseFloat(l)).toFixed(3)
     )
     let res = `oklch(${lVal}${l.endsWith("%") ? "%" : ""} ${parts[1]} ${parts[2]}`
     if (parts[3]) res += ` / ${parts[3]}`
     return res + ")"
   }
 
-  const hslMatch = trimmed.match(/hsla?\(([\d.]+(?:deg|grad|rad|turn)?)[,\s]+([\d.]+)%[,\s]+([\d.]+)%(?:[,\s\/]+([\d.%]+))?\s*\)/)
+  const hslMatch = trimmed.match(
+    /hsla?\(([\d.]+(?:deg|grad|rad|turn)?)[,\s]+([\d.]+)%[,\s]+([\d.]+)%(?:[,\s\/]+([\d.%]+))?\s*\)/
+  )
   if (hslMatch) {
     if (!shouldInvert) return trimmed
     const h = hslMatch[1]
@@ -62,13 +75,24 @@ const processColor = (value, shouldInvert = true, invertMode = "lightness") => {
       : `hsl(${h} ${s}% ${l}%)`
   }
 
-  let r, g, b, a = 1
+  let r,
+    g,
+    b,
+    a = 1
   if (trimmed.startsWith("#")) {
     let hex = trimmed.slice(1)
-    if (hex.length === 3) hex = hex.split("").map(c => c + c).join("")
+    if (hex.length === 3)
+      hex = hex
+        .split("")
+        .map((c) => c + c)
+        .join("")
     if (hex.length === 4) {
       a = parseFloat((parseInt(hex[3] + hex[3], 16) / 255).toFixed(3))
-      hex = hex.slice(0, 3).split("").map(c => c + c).join("")
+      hex = hex
+        .slice(0, 3)
+        .split("")
+        .map((c) => c + c)
+        .join("")
     } else if (hex.length === 8) {
       a = parseFloat((parseInt(hex.slice(6, 8), 16) / 255).toFixed(3))
       hex = hex.slice(0, 6)
@@ -78,7 +102,9 @@ const processColor = (value, shouldInvert = true, invertMode = "lightness") => {
     g = parseInt(hex.slice(2, 4), 16)
     b = parseInt(hex.slice(4, 6), 16)
   } else {
-    const rgbMatch = trimmed.match(/rgba?\((\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s\/]+([\d.%]+))?\s*\)/)
+    const rgbMatch = trimmed.match(
+      /rgba?\((\d+)[,\s]+(\d+)[,\s]+(\d+)(?:[,\s\/]+([\d.%]+))?\s*\)/
+    )
     if (!rgbMatch) return value
     r = parseInt(rgbMatch[1])
     g = parseInt(rgbMatch[2])
@@ -93,7 +119,9 @@ const processColor = (value, shouldInvert = true, invertMode = "lightness") => {
 
   if (shouldInvert) {
     if (invertMode === "spectrum") {
-      r = 255 - r; g = 255 - g; b = 255 - b
+      r = 255 - r
+      g = 255 - g
+      b = 255 - b
     } else {
       const [h, s, l] = rgbToHsl(r, g, b)
       const invertedL = parseFloat((100 - l).toFixed(1))
@@ -108,16 +136,24 @@ const processColor = (value, shouldInvert = true, invertMode = "lightness") => {
 const nightwind = plugin(
   function ({ addBase, addComponents, matchUtilities, theme, config }) {
     const darkModeConfig = config("darkMode", "class")
-    const isDarkModeSelector = Array.isArray(darkModeConfig) ? darkModeConfig[0] === "class" : darkModeConfig === "class"
+    const isDarkModeSelector = Array.isArray(darkModeConfig)
+      ? darkModeConfig[0] === "class"
+      : darkModeConfig === "class"
     const darkSelector = isDarkModeSelector
-      ? (Array.isArray(darkModeConfig) ? darkModeConfig[1] || ".dark" : ".dark")
+      ? Array.isArray(darkModeConfig)
+        ? darkModeConfig[1] || ".dark"
+        : ".dark"
       : "@media (prefers-color-scheme: dark)"
 
     const fixedElementClass = theme("nightwind.fixedClass", "nightwind-prevent")
-    const fixedBlockClass = theme("nightwind.fixedBlockClass", "nightwind-prevent-block")
-    const transitionDurationValue = theme("nightwind.transitionDuration") === false
-      ? false
-      : (theme("nightwind.transitionDuration") || "400ms")
+    const fixedBlockClass = theme(
+      "nightwind.fixedBlockClass",
+      "nightwind-prevent-block"
+    )
+    const transitionDurationValue =
+      theme("nightwind.transitionDuration") === false
+        ? false
+        : theme("nightwind.transitionDuration") || "400ms"
     const invertMode = theme("nightwind.invertMode", "lightness")
 
     // ── transitionClasses ──────────────────────────────────────────────────
@@ -136,12 +172,18 @@ const nightwind = plugin(
       fill: "fill",
       stroke: "stroke",
     }
-    const transitionProperty = Array.isArray(transitionClasses) && transitionClasses.length > 0
-      ? transitionClasses.map(c => transitionPropMap[c] || c).join(", ")
-      : theme("transitionProperty.colors")
+    const transitionProperty =
+      Array.isArray(transitionClasses) && transitionClasses.length > 0
+        ? transitionClasses.map((c) => transitionPropMap[c] || c).join(", ")
+        : theme("transitionProperty.colors")
 
-    if (transitionDurationValue !== false && transitionDurationValue !== "false") {
-      addBase({ ":root": { "--nightwind-transition-duration": transitionDurationValue } })
+    if (
+      transitionDurationValue !== false &&
+      transitionDurationValue !== "false"
+    ) {
+      addBase({
+        ":root": { "--nightwind-transition-duration": transitionDurationValue },
+      })
       addComponents({
         ".nightwind, .nightwind *": {
           "transition-duration": "var(--nightwind-transition-duration)",
@@ -165,25 +207,40 @@ const nightwind = plugin(
       fill: { prop: "fill" },
       stroke: { prop: "stroke" },
       shadow: { prop: "--tw-shadow-color" },
-      divide: { prop: "border-color", suffix: " > :not([hidden]) ~ :not([hidden])" },
+      divide: {
+        prop: "border-color",
+        suffix: " > :not([hidden]) ~ :not([hidden])",
+      },
       placeholder: { prop: "color", suffix: "::placeholder" },
     }
 
     const enabledColorClasses = theme("nightwind.colorClasses")
     const colorUtilities = Array.isArray(enabledColorClasses)
       ? Object.fromEntries(
-        Object.entries(allColorUtilities).filter(([k]) =>
-          enabledColorClasses.includes(k) ||
-          (enabledColorClasses.includes("gradient") && ["from", "via", "to"].includes(k))
+          Object.entries(allColorUtilities).filter(
+            ([k]) =>
+              enabledColorClasses.includes(k) ||
+              (enabledColorClasses.includes("gradient") &&
+                ["from", "via", "to"].includes(k))
+          )
         )
-      )
       : allColorUtilities
 
     // ── variants ───────────────────────────────────────────────────────────
     const configVariants = theme("nightwind.variants")
     const variantsList = Array.isArray(configVariants)
-      ? (configVariants.includes("") ? configVariants : ["", ...configVariants])
-      : ["", "hover", "focus", "active", "focus-within", "focus-visible", "disabled"]
+      ? configVariants.includes("")
+        ? configVariants
+        : ["", ...configVariants]
+      : [
+          "",
+          "hover",
+          "focus",
+          "active",
+          "focus-within",
+          "focus-visible",
+          "disabled",
+        ]
 
     const importantSuffix = config("important") === true ? " !important" : ""
 
@@ -191,14 +248,87 @@ const nightwind = plugin(
     const weights = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]
     const colorScaleConfig = theme("nightwind.colorScale", {})
     const presetScales = {
-      reduced: { 50: 900, 100: 900, 200: 800, 300: 700, 400: 600, 500: 500, 600: 400, 700: 300, 800: 200, 900: 100 }
+      reduced: {
+        50: 900,
+        100: 900,
+        200: 800,
+        300: 700,
+        400: 600,
+        500: 500,
+        600: 400,
+        700: 300,
+        800: 200,
+        900: 100,
+      },
     }
     const colorScale = colorScaleConfig.preset
-      ? (presetScales[colorScaleConfig.preset] || {})
+      ? presetScales[colorScaleConfig.preset] || {}
       : colorScaleConfig
 
     // ── nightwind.colors ───────────────────────────────────────────────────
     const nightwindColors = theme("nightwind.colors") || {}
+
+    // ── Helper: resolve opacity value ────────────────────────────────────────
+    const resolveOpacityWeight = (opacityValue) => {
+      if (!opacityValue) return null
+      const num = parseFloat(opacityValue)
+      if (isNaN(num)) return null
+      if (opacityValue.includes("%")) return num / 100
+      return num > 1 ? num / 100 : num
+    }
+
+    // ── Helper: handle opacity colors (bg-red-600/50) ───────────────────────
+    const handleOpacityColor = (prefix, colorName, weight, opacityValue) => {
+      // Handle named colors like white, black, transparent
+      if (nightwindColors[colorName]) {
+        const mappedColor = theme(`colors.${nightwindColors[colorName]}`)
+        if (mappedColor && typeof mappedColor === "string") {
+          const inverted = processColor(mappedColor, false, invertMode)
+          const opacity = resolveOpacityWeight(opacityValue)
+          if (opacity === null) return null
+          const alphaStr = opacity <= 1 ? `${opacity * 100}%` : `${opacity}%`
+          if (
+            inverted.includes("hsl") ||
+            inverted.includes("rgb") ||
+            inverted.includes("oklch")
+          ) {
+            return inverted.replace(/\s*\/.*\)?$/, ` / ${alphaStr})`)
+          }
+          return `${inverted} / ${alphaStr}`
+        }
+      }
+
+      const weightNum = parseInt(weight, 10)
+      if (isNaN(weightNum) || !weights.includes(weightNum)) return null
+
+      const weightIndex = weights.indexOf(weightNum)
+      const targetColorName = nightwindColors[colorName] || colorName
+      const oppositeWeightNum =
+        colorScale[weightNum] ?? weights[weights.length - 1 - weightIndex]
+
+      const oppositeColor = theme(
+        `colors.${targetColorName}.${oppositeWeightNum}`
+      )
+      if (!oppositeColor || typeof oppositeColor !== "string") return null
+
+      const inverted = processColor(oppositeColor, false, invertMode)
+      const opacity = resolveOpacityWeight(opacityValue)
+      if (opacity === null) return null
+
+      const alphaStr = opacity <= 1 ? `${opacity * 100}%` : `${opacity}%`
+      let invertedWithOpacity
+      if (
+        inverted.includes("hsl") ||
+        inverted.includes("rgb") ||
+        inverted.includes("oklch")
+      ) {
+        invertedWithOpacity = inverted.replace(/\s*\/.*\)?$/, ` / ${alphaStr})`)
+      } else {
+        invertedWithOpacity = `${inverted} / ${alphaStr}`
+      }
+
+      return invertedWithOpacity
+    }
 
     const colors = theme("colors") || {}
     const isMediaStrategy = darkSelector.startsWith("@media")
@@ -231,9 +361,11 @@ const nightwind = plugin(
     // ── loop principal ─────────────────────────────────────────────────────
     Object.entries(colors).forEach(([colorName, colorValue]) => {
       const isStandard = colorValue && typeof colorValue === "object"
-      const weightsToProcess = isStandard ? Object.keys(colorValue) : ["DEFAULT"]
+      const weightsToProcess = isStandard
+        ? Object.keys(colorValue)
+        : ["DEFAULT"]
 
-      weightsToProcess.forEach(weight => {
+      weightsToProcess.forEach((weight) => {
         const colorPath = isStandard ? `${colorName}.${weight}` : colorName
         const resolvedValue = theme(`colors.${colorPath}`)
         if (typeof resolvedValue !== "string") return
@@ -246,11 +378,19 @@ const nightwind = plugin(
           const weightNum = Number(weight)
           const weightIndex = weights.indexOf(weightNum)
           const targetColorName = nightwindColors[colorName] || colorName
-          const oppositeWeightNum = colorScale[weightNum]
-            ?? (weightIndex !== -1 ? weights[weights.length - 1 - weightIndex] : weightNum)
+          const oppositeWeightNum =
+            colorScale[weightNum] ??
+            (weightIndex !== -1
+              ? weights[weights.length - 1 - weightIndex]
+              : weightNum)
 
-          if (oppositeWeightNum !== weightNum || targetColorName !== colorName) {
-            const oppositeColor = theme(`colors.${targetColorName}.${oppositeWeightNum}`)
+          if (
+            oppositeWeightNum !== weightNum ||
+            targetColorName !== colorName
+          ) {
+            const oppositeColor = theme(
+              `colors.${targetColorName}.${oppositeWeightNum}`
+            )
             if (oppositeColor && typeof oppositeColor === "string") {
               invertedValue = oppositeColor
               shouldInvertColor = false
@@ -266,37 +406,49 @@ const nightwind = plugin(
         }
 
         // ── Solução 1: processColor hoistado, calculado UMA vez por peso ─
-        const inverted = processColor(invertedValue, shouldInvertColor, invertMode)
-        const fixedValue = processColor(resolvedValue, false, invertMode)   // reutilizado abaixo como `res`
+        const inverted = processColor(
+          invertedValue,
+          shouldInvertColor,
+          invertMode
+        )
+        const fixedValue = processColor(resolvedValue, false, invertMode) // reutilizado abaixo como `res`
         const gradientValue0 = getGradientValue0(inverted)
         const fixedGradientValue0 = getGradientValue0(fixedValue)
 
         // ── Solução 2: seletores agrupados por variante ──────────────────
         Object.entries(colorUtilities).forEach(([prefix, { prop, suffix }]) => {
-          const baseClass = weight === "DEFAULT"
-            ? `${prefix}-${colorName}`
-            : `${prefix}-${colorName}-${weight}`
-          const escapedBase = baseClass.replace(/:/g, "\\:").replace(/\//g, "\\/")
+          const baseClass =
+            weight === "DEFAULT"
+              ? `${prefix}-${colorName}`
+              : `${prefix}-${colorName}-${weight}`
+          const escapedBase = baseClass
+            .replace(/:/g, "\\:")
+            .replace(/\//g, "\\/")
           const sfx = suffix || ""
 
           // Agrupa todos os seletores dark de todas as variantes em um único key
-          const darkSelectorParts = variantsList.map(v => {
-            const baseSelector = v === "" ? `.${escapedBase}` : `.${v}\\:${escapedBase}:${v}`
+          const darkSelectorParts = variantsList.map((v) => {
+            const baseSelector =
+              v === "" ? `.${escapedBase}` : `.${v}\\:${escapedBase}:${v}`
             return isMediaStrategy
               ? baseSelector + sfx
               : `${darkSelector} ${baseSelector + sfx}`
           })
-          addDark(darkSelectorParts.join(", "), { [prop]: inverted + importantSuffix })
+          addDark(darkSelectorParts.join(", "), {
+            [prop]: inverted + importantSuffix,
+          })
 
           // group-hover / peer-focus
           const extras = [
             `.group:hover .group-hover\\:${escapedBase}`,
-            `.peer:focus ~ .peer-focus\\:${escapedBase}`
+            `.peer:focus ~ .peer-focus\\:${escapedBase}`,
           ]
-          const extraDarkParts = extras.map(s =>
+          const extraDarkParts = extras.map((s) =>
             isMediaStrategy ? s + sfx : `${darkSelector} ${s + sfx}`
           )
-          addDark(extraDarkParts.join(", "), { [prop]: inverted + importantSuffix })
+          addDark(extraDarkParts.join(", "), {
+            [prop]: inverted + importantSuffix,
+          })
 
           // fixed (nightwind-prevent) — UMA entrada, fora do loop de variantes
           addFixed(
@@ -307,54 +459,186 @@ const nightwind = plugin(
           // manual dark: override (dark:bg-X)
           if (!isMediaStrategy) {
             const manualSelector = `${darkSelector} .dark\\:${escapedBase}${sfx}`
-            allClasses[manualSelector] = { [prop]: fixedValue + importantSuffix }
+            allClasses[manualSelector] = {
+              [prop]: fixedValue + importantSuffix,
+            }
           }
         })
+
+        // ── Handle opacity syntax (bg-red-600/50, text-blue-500/75) ───────
+        if (isStandard && !isNaN(weight)) {
+          const standardOpacities = [25, 50, 75]
+          standardOpacities.forEach((opacity) => {
+            const opacityClass = `/${opacity}`
+            const invertedWithOpacity = handleOpacityColor(
+              null,
+              colorName,
+              weight,
+              opacity.toString()
+            )
+            if (!invertedWithOpacity) return
+
+            Object.entries(colorUtilities).forEach(
+              ([prefix, { prop, suffix }]) => {
+                const baseClass = `${prefix}-${colorName}-${weight}${opacityClass}`
+                const escapedBase = baseClass
+                  .replace(/:/g, "\\:")
+                  .replace(/\//g, "\\/")
+                const sfx = suffix || ""
+
+                const darkSelectorParts = variantsList.map((v) => {
+                  const baseSelector =
+                    v === "" ? `.${escapedBase}` : `.${v}\\:${escapedBase}:${v}`
+                  return isMediaStrategy
+                    ? baseSelector + sfx
+                    : `${darkSelector} ${baseSelector + sfx}`
+                })
+                addDark(darkSelectorParts.join(", "), {
+                  [prop]: invertedWithOpacity + importantSuffix,
+                })
+
+                const extras = [
+                  `.group:hover .group-hover\\:${escapedBase}`,
+                  `.peer:focus ~ .peer-focus\\:${escapedBase}`,
+                ]
+                const extraDarkParts = extras.map((s) =>
+                  isMediaStrategy ? s + sfx : `${darkSelector} ${s + sfx}`
+                )
+                addDark(extraDarkParts.join(", "), {
+                  [prop]: invertedWithOpacity + importantSuffix,
+                })
+
+                addFixed(
+                  `.${escapedBase}.${fixedElementClass}${sfx}, .${fixedBlockClass} .${escapedBase}${sfx}`,
+                  { [prop]: `${resolvedValue} / ${opacity}%` + importantSuffix }
+                )
+
+                if (!isMediaStrategy) {
+                  const manualSelector = `${darkSelector} .dark\\:${escapedBase}${sfx}`
+                  allClasses[manualSelector] = {
+                    [prop]: `${resolvedValue} / ${opacity}%` + importantSuffix,
+                  }
+                }
+              }
+            )
+          })
+        }
+
+        // ── Handle opacity for named colors (white, black, etc) ────────────
+        if (!isStandard && weight === "DEFAULT" && nightwindColors[colorName]) {
+          const standardOpacities = [25, 50, 75]
+          standardOpacities.forEach((opacity) => {
+            const opacityClass = `/${opacity}`
+            const invertedWithOpacity = handleOpacityColor(
+              null,
+              colorName,
+              "DEFAULT",
+              opacity.toString()
+            )
+            if (!invertedWithOpacity) return
+
+            Object.entries(colorUtilities).forEach(
+              ([prefix, { prop, suffix }]) => {
+                const baseClass = `${prefix}-${colorName}${opacityClass}`
+                const escapedBase = baseClass
+                  .replace(/:/g, "\\:")
+                  .replace(/\//g, "\\/")
+                const sfx = suffix || ""
+
+                const darkSelectorParts = variantsList.map((v) => {
+                  const baseSelector =
+                    v === "" ? `.${escapedBase}` : `.${v}\\:${escapedBase}:${v}`
+                  return isMediaStrategy
+                    ? baseSelector + sfx
+                    : `${darkSelector} ${baseSelector + sfx}`
+                })
+                addDark(darkSelectorParts.join(", "), {
+                  [prop]: invertedWithOpacity + importantSuffix,
+                })
+
+                const extras = [
+                  `.group:hover .group-hover\\:${escapedBase}`,
+                  `.peer:focus ~ .peer-focus\\:${escapedBase}`,
+                ]
+                const extraDarkParts = extras.map((s) =>
+                  isMediaStrategy ? s + sfx : `${darkSelector} ${s + sfx}`
+                )
+                addDark(extraDarkParts.join(", "), {
+                  [prop]: invertedWithOpacity + importantSuffix,
+                })
+
+                addFixed(
+                  `.${escapedBase}.${fixedElementClass}${sfx}, .${fixedBlockClass} .${escapedBase}${sfx}`,
+                  { [prop]: `${resolvedValue} / ${opacity}%` + importantSuffix }
+                )
+
+                if (!isMediaStrategy) {
+                  const manualSelector = `${darkSelector} .dark\\:${escapedBase}${sfx}`
+                  allClasses[manualSelector] = {
+                    [prop]: `${resolvedValue} / ${opacity}%` + importantSuffix,
+                  }
+                }
+              }
+            )
+          })
+        }
 
         // ── Gradientes ───────────────────────────────────────────────────
         const gradientDefs = {
           from: {
             dark: {
               "--tw-gradient-from": inverted,
-              "--tw-gradient-stops": `var(--tw-gradient-from), var(--tw-gradient-to, ${gradientValue0})`
+              "--tw-gradient-stops": `var(--tw-gradient-from), var(--tw-gradient-to, ${gradientValue0})`,
             },
             fixed: {
               "--tw-gradient-from": fixedValue,
-              "--tw-gradient-stops": `var(--tw-gradient-from), var(--tw-gradient-to, ${fixedGradientValue0})`
-            }
+              "--tw-gradient-stops": `var(--tw-gradient-from), var(--tw-gradient-to, ${fixedGradientValue0})`,
+            },
           },
           via: {
-            dark: { "--tw-gradient-stops": `var(--tw-gradient-from), ${inverted}, var(--tw-gradient-to, ${gradientValue0})` },
-            fixed: { "--tw-gradient-stops": `var(--tw-gradient-from), ${fixedValue}, var(--tw-gradient-to, ${fixedGradientValue0})` }
+            dark: {
+              "--tw-gradient-stops": `var(--tw-gradient-from), ${inverted}, var(--tw-gradient-to, ${gradientValue0})`,
+            },
+            fixed: {
+              "--tw-gradient-stops": `var(--tw-gradient-from), ${fixedValue}, var(--tw-gradient-to, ${fixedGradientValue0})`,
+            },
           },
           to: {
             dark: { "--tw-gradient-to": inverted },
-            fixed: { "--tw-gradient-to": fixedValue }
-          }
+            fixed: { "--tw-gradient-to": fixedValue },
+          },
         }
 
-        Object.entries(gradientDefs).forEach(([prefix, { dark: darkStyles, fixed: fixedStyles }]) => {
-          const baseClass = weight === "DEFAULT" ? `${prefix}-${colorName}` : `${prefix}-${colorName}-${weight}`
-          const escapedBase = baseClass.replace(/:/g, "\\:").replace(/\//g, "\\/")
+        Object.entries(gradientDefs).forEach(
+          ([prefix, { dark: darkStyles, fixed: fixedStyles }]) => {
+            const baseClass =
+              weight === "DEFAULT"
+                ? `${prefix}-${colorName}`
+                : `${prefix}-${colorName}-${weight}`
+            const escapedBase = baseClass
+              .replace(/:/g, "\\:")
+              .replace(/\//g, "\\/")
 
-          // Agrupa todas as variantes em um seletor só
-          const darkSelectorParts = variantsList.map(v => {
-            const sel = v === "" ? `.${escapedBase}` : `.${v}\\:${escapedBase}:${v}`
-            return isMediaStrategy ? sel : `${darkSelector} ${sel}`
-          })
-          addDark(darkSelectorParts.join(", "), darkStyles)
+            // Agrupa todas as variantes em um seletor só
+            const darkSelectorParts = variantsList.map((v) => {
+              const sel =
+                v === "" ? `.${escapedBase}` : `.${v}\\:${escapedBase}:${v}`
+              return isMediaStrategy ? sel : `${darkSelector} ${sel}`
+            })
+            addDark(darkSelectorParts.join(", "), darkStyles)
 
-          // fixed
-          addFixed(
-            `.${escapedBase}.${fixedElementClass}, .${fixedBlockClass} .${escapedBase}`,
-            fixedStyles
-          )
+            // fixed
+            addFixed(
+              `.${escapedBase}.${fixedElementClass}, .${fixedBlockClass} .${escapedBase}`,
+              fixedStyles
+            )
 
-          // manual override
-          if (!isMediaStrategy) {
-            allClasses[`${darkSelector} .dark\\:${escapedBase}`] = fixedStyles
+            // manual override
+            if (!isMediaStrategy) {
+              allClasses[`${darkSelector} .dark\\:${escapedBase}`] = fixedStyles
+            }
           }
-        })
+        )
       })
     })
 
@@ -371,9 +655,12 @@ const nightwind = plugin(
             if (invertedValue === value) return null
             const sfx = suffix || ""
             const styles = {}
-            if (isMediaStrategy) styles[darkSelector] = { [`&${sfx}`]: { [prop]: invertedValue } }
+            if (isMediaStrategy)
+              styles[darkSelector] = { [`&${sfx}`]: { [prop]: invertedValue } }
             else styles[`${darkSelector} &${sfx}`] = { [prop]: invertedValue }
-            styles[`&.${fixedElementClass}${sfx}, .${fixedBlockClass} &${sfx}`] = { [prop]: value }
+            styles[
+              `&.${fixedElementClass}${sfx}, .${fixedBlockClass} &${sfx}`
+            ] = { [prop]: value }
             return styles
           },
         },
@@ -385,10 +672,10 @@ const nightwind = plugin(
     const gradientMatchConfig = {
       from: (val, val0) => ({
         "--tw-gradient-from": val,
-        "--tw-gradient-stops": `var(--tw-gradient-from), var(--tw-gradient-to, ${val0})`
+        "--tw-gradient-stops": `var(--tw-gradient-from), var(--tw-gradient-to, ${val0})`,
       }),
       via: (val, val0) => ({
-        "--tw-gradient-stops": `var(--tw-gradient-from), ${val}, var(--tw-gradient-to, ${val0})`
+        "--tw-gradient-stops": `var(--tw-gradient-from), ${val}, var(--tw-gradient-to, ${val0})`,
       }),
       to: (val) => ({ "--tw-gradient-to": val }),
     }
@@ -402,10 +689,12 @@ const nightwind = plugin(
             if (inv === value) return null
             const inv0 = getGradientValue0(inv)
             const styles = {}
-            if (isMediaStrategy) styles[darkSelector] = { "&": buildStyles(inv, inv0) }
+            if (isMediaStrategy)
+              styles[darkSelector] = { "&": buildStyles(inv, inv0) }
             else styles[`${darkSelector} &`] = buildStyles(inv, inv0)
             const resVal = processColor(value, false, invertMode)
-            styles[`&.${fixedElementClass}, .${fixedBlockClass} &`] = buildStyles(resVal, getGradientValue0(resVal))
+            styles[`&.${fixedElementClass}, .${fixedBlockClass} &`] =
+              buildStyles(resVal, getGradientValue0(resVal))
             return styles
           },
         },
@@ -422,8 +711,14 @@ const nightwind = plugin(
         Object.entries(obj || {}).forEach(([key, val]) => {
           if (typeof val === "string") {
             const t = val.trim().toLowerCase()
-            if (t.startsWith("#") || t.startsWith("rgb") || t.includes("oklch") || t.includes("hsl")) {
-              if (key.startsWith("--tw-prose-")) darkTypographyVars[key] = processColor(val, true, invertMode)
+            if (
+              t.startsWith("#") ||
+              t.startsWith("rgb") ||
+              t.includes("oklch") ||
+              t.includes("hsl")
+            ) {
+              if (key.startsWith("--tw-prose-"))
+                darkTypographyVars[key] = processColor(val, true, invertMode)
             }
           } else if (val && typeof val === "object") extractColors(val)
         })
@@ -431,8 +726,14 @@ const nightwind = plugin(
       if (Array.isArray(typographyTheme)) typographyTheme.forEach(extractColors)
       else extractColors(typographyTheme)
       if (Object.keys(darkTypographyVars).length > 0) {
-        if (isMediaStrategy) addComponents({ [darkSelector]: { [proseSelector]: darkTypographyVars } })
-        else addComponents({ [`${darkSelector} ${proseSelector}`]: darkTypographyVars })
+        if (isMediaStrategy)
+          addComponents({
+            [darkSelector]: { [proseSelector]: darkTypographyVars },
+          })
+        else
+          addComponents({
+            [`${darkSelector} ${proseSelector}`]: darkTypographyVars,
+          })
       }
     }
   },
